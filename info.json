@@ -1,0 +1,136 @@
+{
+  "sistema_experto": {
+    "nombre": "FitExpert",
+    "titulo": "Sistema experto de recetas nutricionistas",
+    "area": "Nutrición",
+    "descripcion": "Sistema experto orientado a la creación de recetas nutritivas y balanceadas para personas que realizan ejercicio o practican algún deporte. El usuario ingresa los ingredientes que tiene disponibles y el sistema analiza sus aportes de proteínas y calorías para recomendar diferentes platillos que puedan prepararse con ellos. Las recetas se adaptan al objetivo físico del usuario, como aumentar masa muscular, perder grasa o mantener su peso.",
+    "arquitectura": {
+      "captura_de_datos": {
+        "entradas_requeridas": [
+          {
+            "campo": "ingredientes_disponibles",
+            "tipo": "array",
+            "descripcion": "Lista de ingredientes que el usuario tiene disponibles"
+          },
+          {
+            "campo": "objetivo_fisico",
+            "tipo": "string",
+            "valores_permitidos": [
+              "aumentar_masa_muscular",
+              "perder_grasa",
+              "mantener_peso"
+            ]
+          }
+        ]
+      },
+      "motor_de_inferencia": {
+        "tipo": "Encadenamiento hacia adelante (Forward Chaining)",
+        "estrategia_de_resolucion": "Coincidencia de subconjuntos (Subset Matching: se dispara si todos los ingredientes del 'if' están contenidos en los ingredientes del usuario)"
+      },
+      "base_de_conocimientos": {
+        "reglas": [
+          {
+            "id": 1,
+            "if": ["huevo"],
+            "then": ["huevo_hervido"]
+          },
+          {
+            "id": 2,
+            "if": ["huevo"],
+            "then": ["huevo_pochado"]
+          },
+          {
+            "id": 3,
+            "if": ["avena"],
+            "then": ["avena_cocida"]
+          },
+          {
+            "id": 4,
+            "if": ["pollo"],
+            "then": ["pollo_a_la_plancha"]
+          },
+          {
+            "id": 5,
+            "if": ["huevo", "espinaca"],
+            "then": ["huevo_con_espinaca"]
+          },
+          {
+            "id": 6,
+            "if": ["atun", "huevo"],
+            "then": ["ensalada_de_atun_y_huevo"]
+          },
+          {
+            "id": 7,
+            "if": ["pollo", "brocoli"],
+            "then": ["pollo_con_brocoli"]
+          },
+          {
+            "id": 8,
+            "if": ["yogur_griego", "avena"],
+            "then": ["yogur_con_avena"]
+          },
+          {
+            "id": 9,
+            "if": ["huevo", "espinaca", "tomate"],
+            "then": ["omelette_fitness"]
+          },
+          {
+            "id": 10,
+            "if": ["pollo", "arroz", "brocoli"],
+            "then": ["bowl_de_pollo"]
+          },
+          {
+            "id": 11,
+            "if": ["avena", "huevo", "banana"],
+            "then": ["pancakes_fitness"]
+          },
+          {
+            "id": 12,
+            "if": ["pollo", "lechuga", "tomate"],
+            "then": ["ensalada_proteica"]
+          },
+          {
+            "id": 13,
+            "if": ["pollo", "arroz", "brocoli", "tomate"],
+            "then": ["bowl_fitness_de_pollo"]
+          },
+          {
+            "id": 14,
+            "if": ["atun", "arroz", "aguacate", "tomate"],
+            "then": ["bowl_de_atun_con_aguacate"]
+          },
+          {
+            "id": 15,
+            "if": ["pollo", "lechuga", "tomate", "aguacate"],
+            "then": ["ensalada_de_pollo"]
+          },
+          {
+            "id": 16,
+            "if": ["pan_integral", "huevo", "aguacate", "tomate"],
+            "then": ["tostada_proteica"]
+          },
+          {
+            "id": 17,
+            "if": ["pollo", "arroz", "brocoli", "zanahoria", "aguacate"],
+            "then": ["bowl_completo_de_pollo"]
+          },
+          {
+            "id": 18,
+            "if": ["pollo", "camote", "brocoli", "zanahoria", "aguacate"],
+            "then": ["plato_fitness_de_pollo"]
+          },
+          {
+            "id": 19,
+            "if": ["pollo", "arroz", "frijoles", "tomate", "maiz", "aguacate"],
+            "then": ["bowl_mexicano_de_pollo"]
+          },
+          {
+            "id": 20,
+            "if": ["atun", "huevo", "arroz", "tomate", "aguacate", "espinaca"],
+            "then": ["bowl_de_atun_y_huevo"]
+          }
+        ]
+      }
+    }
+  }
+}
