@@ -5,9 +5,9 @@ from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
 
-# Caddy elimina este prefijo antes de reenviar la solicitud. Se agrega como
-# SCRIPT_NAME para que url_for() genere las URLs publicas correctas.
-URL_PREFIX = os.environ.get("URL_PREFIX", "/lab1-se").rstrip("/")
+# En local la aplicacion se sirve desde "/". Si se publica detras de un proxy
+# inverso, se puede definir URL_PREFIX, por ejemplo: /lab1-se.
+URL_PREFIX = os.environ.get("URL_PREFIX", "").rstrip("/")
 app.config["APPLICATION_ROOT"] = URL_PREFIX or "/"
 
 
@@ -30,7 +30,7 @@ app.wsgi_app = PrefixMiddleware(app.wsgi_app, URL_PREFIX)
 
 
 # 1. BASE DE CONOCIMIENTOS
-# Informacion nutricional aproximada por porcion.
+# Información nutricional aproximada por porción.
 INGREDIENTES = {
     "huevo": {"calorias": 78, "proteinas": 6},
     "avena": {"calorias": 150, "proteinas": 5},
@@ -49,6 +49,14 @@ INGREDIENTES = {
     "camote": {"calorias": 112, "proteinas": 2},
     "frijoles": {"calorias": 127, "proteinas": 9},
     "maiz": {"calorias": 96, "proteinas": 3.4},
+}
+
+NOMBRES_INGREDIENTES = {
+    "atun": "Atún",
+    "brocoli": "Brócoli",
+    "maiz": "Maíz",
+    "yogur_griego": "Yogur griego",
+    "pan_integral": "Pan integral",
 }
 
 
@@ -89,7 +97,7 @@ REGLAS = [
 ]
 
 
-# 3. INFORMACION DE LAS RECETAS
+# 3. INFORMACIÓN DE LAS RECETAS
 RECETAS = {
     "huevo_hervido": {
         "nombre": "Huevo hervido",
@@ -117,13 +125,13 @@ RECETAS = {
         "ingredientes": ["huevo", "espinaca"],
     },
     "ensalada_de_atun_y_huevo": {
-        "nombre": "Ensalada de atun y huevo",
-        "descripcion": "Ensalada rica en proteinas.",
+        "nombre": "Ensalada de atún y huevo",
+        "descripcion": "Ensalada rica en proteínas.",
         "ingredientes": ["atun", "huevo"],
     },
     "pollo_con_brocoli": {
-        "nombre": "Pollo con brocoli",
-        "descripcion": "Pollo acompañado de brocoli.",
+        "nombre": "Pollo con brócoli",
+        "descripcion": "Pollo acompañado de brócoli.",
         "ingredientes": ["pollo", "brocoli"],
     },
     "yogur_con_avena": {
@@ -138,7 +146,7 @@ RECETAS = {
     },
     "bowl_de_pollo": {
         "nombre": "Bowl de pollo",
-        "descripcion": "Pollo acompañado de arroz y brocoli.",
+        "descripcion": "Pollo acompañado de arroz y brócoli.",
         "ingredientes": ["pollo", "arroz", "brocoli"],
     },
     "pancakes_fitness": {
@@ -153,12 +161,12 @@ RECETAS = {
     },
     "bowl_fitness_de_pollo": {
         "nombre": "Bowl fitness de pollo",
-        "descripcion": "Bowl de pollo, arroz, brocoli y tomate.",
+        "descripcion": "Bowl de pollo, arroz, brócoli y tomate.",
         "ingredientes": ["pollo", "arroz", "brocoli", "tomate"],
     },
     "bowl_de_atun_con_aguacate": {
-        "nombre": "Bowl de atun con aguacate",
-        "descripcion": "Atun acompañado de arroz, tomate y aguacate.",
+        "nombre": "Bowl de atún con aguacate",
+        "descripcion": "Atún acompañado de arroz, tomate y aguacate.",
         "ingredientes": ["atun", "arroz", "aguacate", "tomate"],
     },
     "ensalada_de_pollo": {
@@ -183,11 +191,11 @@ RECETAS = {
     },
     "bowl_mexicano_de_pollo": {
         "nombre": "Bowl mexicano de pollo",
-        "descripcion": "Bowl con pollo, arroz, frijoles, tomate, maiz y aguacate.",
+        "descripcion": "Bowl con pollo, arroz, frijoles, tomate, maíz y aguacate.",
         "ingredientes": ["pollo", "arroz", "frijoles", "tomate", "maiz", "aguacate"],
     },
     "bowl_de_atun_y_huevo": {
-        "nombre": "Bowl de atun y huevo",
+        "nombre": "Bowl de atún y huevo",
         "descripcion": "Bowl de alto contenido proteico.",
         "ingredientes": ["atun", "huevo", "arroz", "tomate", "aguacate", "espinaca"],
     },
@@ -200,23 +208,46 @@ OBJETIVOS = {
     "mantener_peso": "Mantener peso",
 }
 
+CRITERIOS_OBJETIVO = {
+    "aumentar_masa_muscular": {
+        "nombre": "Alto aporte de proteína",
+        "descripcion": "Prioriza recetas con mayor cantidad de proteína para favorecer la recuperación y el desarrollo muscular.",
+    },
+    "perder_grasa": {
+        "nombre": "Control de calorías",
+        "descripcion": "Prioriza recetas con menos calorías y una buena cantidad de proteína para apoyar la pérdida de grasa.",
+    },
+    "mantener_peso": {
+        "nombre": "Balance nutricional",
+        "descripcion": "Prioriza recetas equilibradas en energía y proteína para mantener el peso corporal.",
+    },
+}
+
 
 def formato_ingrediente(ingrediente):
-    return ingrediente.replace("_", " ").title()
+    return NOMBRES_INGREDIENTES.get(ingrediente, ingrediente.replace("_", " ").title())
 
 
 def motor_inferencia(ingredientes_usuario):
-    recetas_encontradas = []
+    reglas_activadas = []
+    recetas_encontradas = set()
 
-    for regla in REGLAS:
+    for indice, regla in enumerate(REGLAS, start=1):
         condiciones = regla["if"]
         resultado = regla["then"][0]
 
         if all(ingrediente in ingredientes_usuario for ingrediente in condiciones):
             if resultado not in recetas_encontradas:
-                recetas_encontradas.append(resultado)
+                recetas_encontradas.add(resultado)
+                reglas_activadas.append(
+                    {
+                        "regla": indice,
+                        "condiciones": condiciones,
+                        "receta_id": resultado,
+                    }
+                )
 
-    return recetas_encontradas
+    return reglas_activadas
 
 
 def calcular_nutricion(ingredientes):
@@ -231,9 +262,60 @@ def calcular_nutricion(ingredientes):
     return calorias, proteinas
 
 
-def construir_receta(receta_id):
+def evaluar_objetivo(objetivo, calorias, proteinas):
+    if objetivo == "aumentar_masa_muscular":
+        puntuacion = proteinas * 3 + calorias / 90
+        if proteinas >= 30:
+            etiqueta = "Muy adecuada"
+        elif proteinas >= 15:
+            etiqueta = "Adecuada"
+        else:
+            etiqueta = "Complementaria"
+        razon = "Se prioriza por su aporte de proteína."
+    elif objetivo == "perder_grasa":
+        puntuacion = proteinas * 2 - calorias / 70
+        if calorias <= 250 and proteinas >= 10:
+            etiqueta = "Muy adecuada"
+        elif calorias <= 400:
+            etiqueta = "Adecuada"
+        else:
+            etiqueta = "Moderada"
+        razon = "Se evalúa por control calórico y proteína disponible."
+    else:
+        distancia_balance = abs(calorias - 350)
+        puntuacion = proteinas * 1.8 - distancia_balance / 80
+        if 250 <= calorias <= 500 and proteinas >= 12:
+            etiqueta = "Muy adecuada"
+        elif calorias <= 550:
+            etiqueta = "Adecuada"
+        else:
+            etiqueta = "Moderada"
+        razon = "Se evalúa como una opción balanceada para mantener el peso."
+
+    return {
+        "puntuacion": round(puntuacion, 2),
+        "etiqueta": etiqueta,
+        "razon": razon,
+    }
+
+
+def construir_explicacion(regla_activada, receta, objetivo_nombre, evaluacion):
+    ingredientes = ", ".join(
+        formato_ingrediente(ingrediente) for ingrediente in regla_activada["condiciones"]
+    )
+    return (
+        f"Regla {regla_activada['regla']} activada: como el usuario tiene "
+        f"{ingredientes}, se recomienda {receta['nombre']}. "
+        f"Para el objetivo '{objetivo_nombre}', la receta se clasifica como "
+        f"{evaluacion['etiqueta'].lower()} porque {evaluacion['razon'].lower()}"
+    )
+
+
+def construir_receta(receta_id, objetivo, regla_activada):
     receta = RECETAS[receta_id]
     calorias, proteinas = calcular_nutricion(receta["ingredientes"])
+    evaluacion = evaluar_objetivo(objetivo, calorias, proteinas)
+    objetivo_nombre = OBJETIVOS.get(objetivo, OBJETIVOS["mantener_peso"])
 
     return {
         "id": receta_id,
@@ -250,21 +332,46 @@ def construir_receta(receta_id):
         ],
         "calorias": calorias,
         "proteinas": round(proteinas, 1),
+        "criterio": CRITERIOS_OBJETIVO[objetivo]["nombre"],
+        "adecuacion": evaluacion["etiqueta"],
+        "puntuacion": evaluacion["puntuacion"],
+        "regla_activada": {
+            "numero": regla_activada["regla"],
+            "condiciones": [
+                {"id": ingrediente, "nombre": formato_ingrediente(ingrediente)}
+                for ingrediente in regla_activada["condiciones"]
+            ],
+            "resultado": receta_id,
+        },
+        "explicacion": construir_explicacion(
+            regla_activada,
+            receta,
+            objetivo_nombre,
+            evaluacion,
+        ),
     }
 
 
 def recomendar_recetas(objetivo, ingredientes_usuario):
+    if objetivo not in OBJETIVOS:
+        objetivo = "mantener_peso"
+
     ingredientes_validos = [
         ingrediente
         for ingrediente in ingredientes_usuario
         if ingrediente in INGREDIENTES
     ]
-    recetas_ids = motor_inferencia(ingredientes_validos)
-    recetas = [construir_receta(receta_id) for receta_id in recetas_ids]
+    reglas_activadas = motor_inferencia(ingredientes_validos)
+    recetas = [
+        construir_receta(regla["receta_id"], objetivo, regla)
+        for regla in reglas_activadas
+    ]
+    recetas.sort(key=lambda receta: receta["puntuacion"], reverse=True)
 
     return {
         "objetivo": objetivo,
         "objetivo_nombre": OBJETIVOS.get(objetivo, OBJETIVOS["mantener_peso"]),
+        "criterio_objetivo": CRITERIOS_OBJETIVO[objetivo],
         "ingredientes": [
             {"id": ingrediente, "nombre": formato_ingrediente(ingrediente)}
             for ingrediente in ingredientes_validos
@@ -273,6 +380,7 @@ def recomendar_recetas(objetivo, ingredientes_usuario):
         "totales": {
             "recetas": len(recetas),
             "ingredientes": len(ingredientes_validos),
+            "reglas_activadas": len(reglas_activadas),
         },
     }
 
@@ -304,6 +412,9 @@ def api_recomendar():
     if not isinstance(ingredientes, list):
         return jsonify({"error": "El campo ingredientes debe ser una lista."}), 400
 
+    if objetivo not in OBJETIVOS:
+        return jsonify({"error": "El objetivo físico seleccionado no es válido."}), 400
+
     resultado = recomendar_recetas(objetivo, ingredientes)
     return jsonify(resultado)
 
@@ -314,4 +425,6 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port=5001)
+    port = int(os.environ.get("PORT", 5001))
+    debug = os.environ.get("FLASK_DEBUG", "1") == "1"
+    app.run(debug=debug, host="127.0.0.1", port=port)

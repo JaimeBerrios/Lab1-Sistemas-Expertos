@@ -29,31 +29,51 @@ function renderRecipes(data) {
   const recipes = data.recetas || [];
   recipeCount.textContent = recipes.length;
   resultsTitle.textContent = `${recipes.length} receta(s) recomendada(s)`;
-  resultsSubtitle.textContent = `${data.objetivo_nombre} con ${data.totales.ingredientes} ingrediente(s) seleccionado(s).`;
+  resultsSubtitle.textContent = `${data.objetivo_nombre} · ${data.totales.reglas_activadas} regla(s) activada(s).`;
   resultsGrid.innerHTML = "";
 
   if (recipes.length === 0) {
-    setStatus("No se encontraron recetas para esa combinacion de ingredientes.", "warning");
+    setStatus("No se encontraron recetas para esa combinación de ingredientes.", "warning");
     return;
   }
 
-  setStatus("El motor de inferencia encontro recetas compatibles.", "success");
+  setStatus(
+    `El motor de inferencia aplicó el criterio: ${data.criterio_objetivo.nombre}.`,
+    "success"
+  );
 
   resultsGrid.innerHTML = recipes.map((recipe) => {
     const chips = recipe.ingredientes
       .map((ingredient) => `<span class="ingredient-chip">${escapeHtml(ingredient.nombre)}</span>`)
       .join("");
 
+    const ruleIngredients = recipe.regla_activada.condiciones
+      .map((ingredient) => `<span>${escapeHtml(ingredient.nombre)}</span>`)
+      .join("");
+
     return `
       <article class="recipe-card">
-        <h3>${escapeHtml(recipe.nombre)}</h3>
+        <div class="recipe-card-header">
+          <div>
+            <span class="recipe-kicker">Regla ${escapeHtml(recipe.regla_activada.numero)}</span>
+            <h3>${escapeHtml(recipe.nombre)}</h3>
+          </div>
+          <span class="fit-badge">${escapeHtml(recipe.adecuacion)}</span>
+        </div>
         <p class="mb-2">${escapeHtml(recipe.descripcion)}</p>
         <div class="metric-row">
           <span class="metric-pill">${escapeHtml(recipe.calorias)} kcal</span>
-          <span class="metric-pill">${escapeHtml(recipe.proteinas)} g proteina</span>
+          <span class="metric-pill">${escapeHtml(recipe.proteinas)} g proteína</span>
+          <span class="metric-pill metric-pill-blue">${escapeHtml(recipe.criterio)}</span>
         </div>
         <div aria-label="Ingredientes de ${escapeHtml(recipe.nombre)}">
           ${chips}
+        </div>
+        <div class="inference-box">
+          <div class="rule-chain" aria-label="Condiciones de la regla activada">
+            ${ruleIngredients}
+          </div>
+          <p>${escapeHtml(recipe.explicacion)}</p>
         </div>
       </article>
     `;
@@ -99,7 +119,7 @@ form.addEventListener("submit", async (event) => {
     recipeCount.textContent = "0";
     resultsGrid.innerHTML = "";
     resultsTitle.textContent = "Error";
-    resultsSubtitle.textContent = "Revisa la conexion con el servidor Flask.";
+    resultsSubtitle.textContent = "Revisa la conexión con el servidor Flask.";
     setStatus(error.message, "danger");
   }
 });
@@ -112,6 +132,6 @@ clearButton.addEventListener("click", () => {
   recipeCount.textContent = "0";
   resultsGrid.innerHTML = "";
   resultsTitle.textContent = "Resultados";
-  resultsSubtitle.textContent = "Los resultados apareceran aqui sin recargar la pagina.";
+  resultsSubtitle.textContent = "Los resultados aparecerán aquí sin recargar la página.";
   setStatus("Marca ingredientes y ejecuta el sistema experto.", "info");
 });
