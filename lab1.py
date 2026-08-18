@@ -304,8 +304,7 @@ def construir_explicacion(regla_activada, receta, objetivo_nombre, evaluacion):
         formato_ingrediente(ingrediente) for ingrediente in regla_activada["condiciones"]
     )
     return (
-        f"Regla {regla_activada['regla']} activada: como el usuario tiene "
-        f"{ingredientes}, se recomienda {receta['nombre']}. "
+        f"Como el usuario tiene {ingredientes}, se recomienda {receta['nombre']}. "
         f"Para el objetivo '{objetivo_nombre}', la receta se clasifica como "
         f"{evaluacion['etiqueta'].lower()} porque {evaluacion['razon'].lower()}"
     )

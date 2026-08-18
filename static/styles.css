@@ -300,11 +300,6 @@ body {
   font-size: 0.9rem;
 }
 
-.metric-pill-blue {
-  background: #edf4ff;
-  color: #1d4ed8;
-}
-
 .fit-badge {
   align-self: start;
   flex: 0 0 auto;
@@ -342,30 +337,11 @@ body {
   font-size: 0.92rem;
 }
 
-.rule-chain {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.rule-chain span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0.25rem 0.55rem;
-  border-radius: 999px;
-  background: #ffffff;
+.inference-box strong {
+  display: block;
   color: #1e3a5f;
-  font-size: 0.84rem;
-  font-weight: 700;
-}
-
-.rule-chain span::before {
-  content: "if";
-  margin-right: 0.35rem;
-  color: var(--accent);
-  font-size: 0.72rem;
-  font-weight: 900;
+  font-size: 0.86rem;
+  font-weight: 800;
   text-transform: uppercase;
 }
 

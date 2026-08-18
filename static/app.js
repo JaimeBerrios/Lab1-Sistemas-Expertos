@@ -47,10 +47,6 @@ function renderRecipes(data) {
       .map((ingredient) => `<span class="ingredient-chip">${escapeHtml(ingredient.nombre)}</span>`)
       .join("");
 
-    const ruleIngredients = recipe.regla_activada.condiciones
-      .map((ingredient) => `<span>${escapeHtml(ingredient.nombre)}</span>`)
-      .join("");
-
     return `
       <article class="recipe-card">
         <div class="recipe-card-header">
@@ -64,15 +60,12 @@ function renderRecipes(data) {
         <div class="metric-row">
           <span class="metric-pill">${escapeHtml(recipe.calorias)} kcal</span>
           <span class="metric-pill">${escapeHtml(recipe.proteinas)} g proteína</span>
-          <span class="metric-pill metric-pill-blue">${escapeHtml(recipe.criterio)}</span>
         </div>
         <div aria-label="Ingredientes de ${escapeHtml(recipe.nombre)}">
           ${chips}
         </div>
         <div class="inference-box">
-          <div class="rule-chain" aria-label="Condiciones de la regla activada">
-            ${ruleIngredients}
-          </div>
+          <strong>Inferencia aplicada</strong>
           <p>${escapeHtml(recipe.explicacion)}</p>
         </div>
       </article>
