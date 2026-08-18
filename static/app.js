@@ -77,7 +77,7 @@ form.addEventListener("submit", async (event) => {
   setStatus("Analizando reglas del sistema experto...", "info");
 
   try {
-    const response = await fetch("./api/recomendar", {
+    const response = await fetch(form.dataset.apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

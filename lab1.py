@@ -1,7 +1,32 @@
+import os
+
 from flask import Flask, jsonify, render_template, request
 
 
 app = Flask(__name__)
+
+# Caddy elimina este prefijo antes de reenviar la solicitud. Se agrega como
+# SCRIPT_NAME para que url_for() genere las URLs publicas correctas.
+URL_PREFIX = os.environ.get("URL_PREFIX", "/lab1-se").rstrip("/")
+app.config["APPLICATION_ROOT"] = URL_PREFIX or "/"
+
+
+class PrefixMiddleware:
+    """Expone a Flask el prefijo publico eliminado por el proxy inverso."""
+
+    def __init__(self, application, prefix):
+        self.application = application
+        self.prefix = prefix
+
+    def __call__(self, environ, start_response):
+        forwarded_prefix = environ.get("HTTP_X_FORWARDED_PREFIX")
+        prefix = (forwarded_prefix or self.prefix).rstrip("/")
+        if prefix:
+            environ["SCRIPT_NAME"] = prefix
+        return self.application(environ, start_response)
+
+
+app.wsgi_app = PrefixMiddleware(app.wsgi_app, URL_PREFIX)
 
 
 # 1. BASE DE CONOCIMIENTOS
