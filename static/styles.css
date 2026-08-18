@@ -1,0 +1,245 @@
+:root {
+  --bg: #f5f7fb;
+  --ink: #17202a;
+  --muted: #657384;
+  --line: #dfe6ee;
+  --brand: #1f7a4d;
+  --brand-dark: #155c39;
+  --accent: #2563eb;
+  --panel: #ffffff;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.hero-section {
+  background:
+    linear-gradient(120deg, rgba(13, 38, 28, 0.92), rgba(31, 122, 77, 0.84)),
+    url("https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1600&q=80");
+  background-position: center;
+  background-size: cover;
+  color: #ffffff;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  color: #d7f7e4;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.hero-section .lead {
+  max-width: 680px;
+  color: #edf8f1;
+}
+
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.summary-strip div {
+  min-height: 84px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.summary-strip strong,
+.summary-strip span {
+  display: block;
+}
+
+.summary-strip strong {
+  font-size: 1.35rem;
+}
+
+.summary-strip span {
+  color: #e6f3ea;
+  font-size: 0.9rem;
+}
+
+.control-panel,
+.results-panel {
+  height: 100%;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 18px 45px rgba(22, 36, 54, 0.08);
+}
+
+.panel-header {
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-header h2,
+.results-header h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.panel-header p,
+.results-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.ingredient-list {
+  display: grid;
+  gap: 0.6rem;
+  max-height: 460px;
+  padding-right: 0.35rem;
+  overflow-y: auto;
+}
+
+.ingredient-option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.65rem;
+  align-items: start;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.ingredient-option:hover,
+.ingredient-option:has(input:checked) {
+  border-color: rgba(31, 122, 77, 0.55);
+  background: #f1fbf5;
+}
+
+.ingredient-option input {
+  grid-row: span 2;
+  margin-top: 0.18rem;
+}
+
+.ingredient-name {
+  font-weight: 700;
+}
+
+.ingredient-meta {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.count-badge {
+  display: grid;
+  place-items: center;
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #e8f4ff;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.results-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.recipe-card {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.recipe-card h3 {
+  margin-bottom: 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.recipe-card p {
+  color: var(--muted);
+}
+
+.metric-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.9rem 0;
+}
+
+.metric-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: #eef7f1;
+  color: var(--brand-dark);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.ingredient-chip {
+  display: inline-flex;
+  margin: 0.2rem 0.25rem 0 0;
+  padding: 0.32rem 0.58rem;
+  border: 1px solid #d8e5db;
+  border-radius: 999px;
+  color: #31533f;
+  background: #fbfdfb;
+  font-size: 0.86rem;
+}
+
+.btn-success {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.btn-success:hover {
+  background: var(--brand-dark);
+  border-color: var(--brand-dark);
+}
+
+@media (max-width: 991.98px) {
+  .summary-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .ingredient-list {
+    max-height: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .hero-section .display-5 {
+    font-size: 2.1rem;
+  }
+
+  .results-header {
+    align-items: flex-start;
+  }
+}
