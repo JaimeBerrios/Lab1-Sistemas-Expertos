@@ -3,6 +3,7 @@
     "id": "fitexpert",
     "nombre": "FitExpert",
     "version": "2.0.0",
+    "evaluacion": "Parcial 1 v 2.0.0 · Sistemas Expertos",
     "area": "Nutrición",
     "descripcion": "Sistema basado en conocimiento para recomendar recetas según ingredientes disponibles, objetivo nutricional y tipo de comida.",
     "inferencia": {

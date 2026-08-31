@@ -342,8 +342,8 @@ def index():
     )
 
 
-@app.post("/api/recomendar")
-def api_recomendar():
+@app.post("/api/recommend")
+def api_recommend():
     data = request.get_json(silent=True)
     hechos, errores = validar_payload(data)
     if errores:
@@ -357,12 +357,19 @@ def api_recomendar():
     return jsonify(resultado)
 
 
+@app.post("/api/recomendar")
+def api_recomendar():
+    """Alias conservado para clientes de FitExpert 1.x y 2.0 inicial."""
+    return api_recommend()
+
+
 @app.get("/health")
 def health():
     return jsonify(
         {
             "status": "ok",
             "version": SISTEMA["version"],
+            "evaluacion": SISTEMA["evaluacion"],
             "ingredientes": len(INGREDIENTES),
             "recetas": len(RECETAS),
             "reglas": len(REGLAS),

@@ -8,6 +8,10 @@ class BaseConocimientoTests(unittest.TestCase):
         self.assertEqual(len(lab1.INGREDIENTES), 27)
         self.assertEqual(len(lab1.RECETAS), 32)
         self.assertEqual(len(lab1.REGLAS), 32)
+        self.assertEqual(
+            lab1.SISTEMA["evaluacion"],
+            "Parcial 1 v 2.0.0 · Sistemas Expertos",
+        )
 
         for ingrediente_id, ingrediente in lab1.INGREDIENTES.items():
             self.assertEqual(ingrediente["id"], ingrediente_id)
@@ -95,7 +99,7 @@ class ApiTests(unittest.TestCase):
 
     def test_consulta_valida(self):
         response = self.client.post(
-            "/api/recomendar",
+            "/api/recommend",
             json={
                 "objetivo": "aumentar_masa_muscular",
                 "tipo_comida": "desayuno",
@@ -117,6 +121,8 @@ class ApiTests(unittest.TestCase):
         contenido = response.get_data(as_text=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn('name="tipo_comida"', contenido)
+        self.assertIn("Parcial 1 v 2.0.0 · Sistemas Expertos", contenido)
+        self.assertIn('data-api-url="/api/recommend"', contenido)
         self.assertIn("32</strong>", contenido)
         self.assertEqual(contenido.count('name="ingredientes"'), 27)
 
@@ -152,19 +158,19 @@ class ApiTests(unittest.TestCase):
         ]
         for payload in casos:
             with self.subTest(payload=payload):
-                response = self.client.post("/api/recomendar", json=payload)
+                response = self.client.post("/api/recommend", json=payload)
                 self.assertEqual(response.status_code, 400)
                 self.assertIn("detalles", response.get_json())
 
     def test_json_malformado_devuelve_400(self):
         response = self.client.post(
-            "/api/recomendar", data="{", content_type="application/json"
+            "/api/recommend", data="{", content_type="application/json"
         )
         self.assertEqual(response.status_code, 400)
 
     def test_ingredientes_duplicados_se_normalizan(self):
         response = self.client.post(
-            "/api/recomendar",
+            "/api/recommend",
             json={
                 "objetivo": "mantener_peso",
                 "tipo_comida": "almuerzo",
@@ -182,11 +188,23 @@ class ApiTests(unittest.TestCase):
             {
                 "status": "ok",
                 "version": "2.0.0",
+                "evaluacion": "Parcial 1 v 2.0.0 · Sistemas Expertos",
                 "ingredientes": 27,
                 "recetas": 32,
                 "reglas": 32,
             },
         )
+
+    def test_endpoint_anterior_se_conserva_como_alias(self):
+        payload = {
+            "objetivo": "mantener_peso",
+            "tipo_comida": "almuerzo",
+            "ingredientes": ["pollo"],
+        }
+        canonical = self.client.post("/api/recommend", json=payload)
+        legacy = self.client.post("/api/recomendar", json=payload)
+        self.assertEqual(legacy.status_code, 200)
+        self.assertEqual(legacy.get_json(), canonical.get_json())
 
 
 if __name__ == "__main__":
