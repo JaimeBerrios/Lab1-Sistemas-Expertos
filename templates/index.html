@@ -3,6 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="FitExpert 2.0.0, sistema experto de recomendación nutricional para el Primer Parcial."
+    >
     <title>FitExpert v2.0.0 | Parcial 1 · Sistemas Expertos</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -16,173 +20,242 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="hero-section">
-        <div class="container py-4 py-lg-5">
-          <div class="row align-items-end g-4">
-            <div class="col-lg-7">
-              <span class="eyebrow">Parcial 1 v 2.0.0 · Sistemas Expertos</span>
-              <h1 class="display-5 fw-bold mb-3">FitExpert</h1>
-              <p class="lead mb-0">
-                Recomienda recetas mediante reglas de producción, objetivo nutricional,
-                tipo de comida y coincidencia de ingredientes.
-              </p>
-            </div>
-            <div class="col-lg-5">
-              <div class="summary-strip">
-                <div>
-                  <strong>{{ ingredientes|length }}</strong>
-                  <span>ingredientes</span>
-                </div>
-                <div>
-                  <strong>{{ reglas_count }}</strong>
-                  <span>reglas</span>
-                </div>
-                <div>
-                  <strong>{{ recetas_count }}</strong>
-                  <span>recetas</span>
-                </div>
-              </div>
+      <header class="hero-section">
+        <div class="container hero-content">
+          <div>
+            <span class="eyebrow">Parcial 1 v 2.0.0 · Sistemas Expertos</span>
+            <h1>FitExpert</h1>
+            <p>
+              Recomendaciones nutricionales explicables mediante reglas,
+              coincidencia de ingredientes y scoring por objetivo.
+            </p>
+          </div>
+          <div class="hero-side">
+            <span class="engine-status">
+              <span aria-hidden="true"></span>
+              Motor listo
+            </span>
+            <div class="summary-strip" aria-label="Resumen de la base de conocimiento">
+              <div><strong>{{ ingredientes|length }}</strong><span>ingredientes</span></div>
+              <div><strong>{{ recetas_count }}</strong><span>recetas</span></div>
+              <div><strong>{{ reglas_count }}</strong><span>reglas</span></div>
             </div>
           </div>
         </div>
-      </section>
+      </header>
 
-      <section class="container main-grid py-4 py-lg-5">
-        <div class="row g-4">
-          <div class="col-lg-4">
-            <form
-              id="expert-form"
-              class="control-panel"
-              data-api-url="{{ url_for('api_recommend') }}"
-            >
-              <div class="panel-header">
-                <h2>Parámetros</h2>
-                <p>El objetivo, el tipo de comida y los ingredientes alimentan el motor de inferencia.</p>
+      <section class="container dashboard-shell">
+        <form
+          id="expert-form"
+          class="expert-panel"
+          data-api-url="{{ url_for('api_recommend') }}"
+        >
+          <div class="panel-title">
+            <div>
+              <span class="section-label">Memoria de trabajo</span>
+              <h2>Define los hechos iniciales</h2>
+            </div>
+            <button type="button" id="demo-btn" class="btn btn-outline-primary icon-button-text">
+              <i class="bi bi-play-circle" aria-hidden="true"></i>
+              Cargar caso demo
+            </button>
+          </div>
+
+          <section class="input-step" aria-labelledby="objective-heading">
+            <div class="step-heading">
+              <span class="step-number">1</span>
+              <div>
+                <h3 id="objective-heading">Objetivo nutricional</h3>
+                <p>Determina cómo se calcula el scoring de desempate.</p>
               </div>
+            </div>
+            <div class="objective-grid" role="radiogroup" aria-label="Objetivo nutricional">
+              {% for id, nombre in objetivos.items() %}
+                <label class="choice-option">
+                  <input
+                    type="radio"
+                    name="objetivo"
+                    value="{{ id }}"
+                    {% if id == "mantener_peso" %}checked{% endif %}
+                  >
+                  <span class="choice-icon" aria-hidden="true">
+                    {% if id == "aumentar_masa_muscular" %}
+                      <i class="bi bi-activity"></i>
+                    {% elif id == "perder_grasa" %}
+                      <i class="bi bi-graph-down-arrow"></i>
+                    {% else %}
+                      <i class="bi bi-sliders"></i>
+                    {% endif %}
+                  </span>
+                  <span>
+                    <strong>{{ nombre }}</strong>
+                    <small>
+                      {% if id == "aumentar_masa_muscular" %}
+                        Proteína y energía
+                      {% elif id == "perder_grasa" %}
+                        Control calórico
+                      {% else %}
+                        Balance de macros
+                      {% endif %}
+                    </small>
+                  </span>
+                  <i class="bi bi-check-circle-fill choice-check" aria-hidden="true"></i>
+                </label>
+              {% endfor %}
+            </div>
+          </section>
 
-              <div class="mb-4">
-                <label for="objetivo" class="form-label">Objetivo físico</label>
-                <select id="objetivo" name="objetivo" class="form-select">
-                  {% for id, nombre in objetivos.items() %}
-                    <option value="{{ id }}" {% if id == "mantener_peso" %}selected{% endif %}>
-                      {{ nombre }}
-                    </option>
-                  {% endfor %}
-                </select>
+          <section class="input-step" aria-labelledby="meal-heading">
+            <div class="step-heading">
+              <span class="step-number">2</span>
+              <div>
+                <h3 id="meal-heading">Tipo de comida</h3>
+                <p>Filtra las reglas antes de calcular la coincidencia.</p>
               </div>
+            </div>
+            <div class="meal-grid" role="radiogroup" aria-label="Tipo de comida">
+              {% for id, nombre in tipos_comida.items() %}
+                <label class="meal-option">
+                  <input
+                    type="radio"
+                    name="tipo_comida"
+                    value="{{ id }}"
+                    {% if id == "todos" %}checked{% endif %}
+                  >
+                  <span aria-hidden="true">
+                    {% if id == "desayuno" %}
+                      <i class="bi bi-sunrise"></i>
+                    {% elif id == "almuerzo" %}
+                      <i class="bi bi-sun"></i>
+                    {% elif id == "cena" %}
+                      <i class="bi bi-moon-stars"></i>
+                    {% elif id == "snack" %}
+                      <i class="bi bi-cup-straw"></i>
+                    {% else %}
+                      <i class="bi bi-grid"></i>
+                    {% endif %}
+                  </span>
+                  <strong>{{ nombre }}</strong>
+                </label>
+              {% endfor %}
+            </div>
+          </section>
 
-              <div class="mb-4">
-                <label for="tipo-comida" class="form-label">Tipo de comida</label>
-                <select id="tipo-comida" name="tipo_comida" class="form-select">
-                  {% for id, nombre in tipos_comida.items() %}
-                    <option value="{{ id }}" {% if id == "todos" %}selected{% endif %}>
-                      {{ nombre }}
-                    </option>
-                  {% endfor %}
-                </select>
+          <section class="input-step ingredients-step" aria-labelledby="ingredients-heading">
+            <div class="ingredients-toolbar">
+              <div class="step-heading">
+                <span class="step-number">3</span>
+                <div>
+                  <h3 id="ingredients-heading">Ingredientes disponibles</h3>
+                  <p>Selecciona los hechos que conoce el motor.</p>
+                </div>
               </div>
-
-              <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
-                <label class="form-label mb-0">Ingredientes disponibles</label>
-                <button type="button" id="clear-btn" class="btn btn-sm btn-outline-secondary icon-button-text">
+              <div class="quick-actions" aria-label="Acciones rápidas">
+                <button type="button" id="select-all-btn" class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-check2-all" aria-hidden="true"></i>
+                  Seleccionar todos
+                </button>
+                <button type="button" id="clear-btn" class="btn btn-sm btn-outline-secondary">
                   <i class="bi bi-eraser" aria-hidden="true"></i>
                   Limpiar
                 </button>
               </div>
+            </div>
 
-              <div class="ingredient-list">
-                {% for ingrediente in ingredientes %}
-                  <label class="ingredient-option">
-                    <input
-                      type="checkbox"
-                      name="ingredientes"
-                      value="{{ ingrediente.id }}"
-                      class="form-check-input"
-                    >
-                    <span class="ingredient-name">{{ ingrediente.nombre }}</span>
-                    <span class="ingredient-meta">
-                      {{ ingrediente.nutricion.calorias }} kcal ·
-                      P {{ "%.1f"|format(ingrediente.nutricion.proteinas) }} g ·
-                      C {{ "%.1f"|format(ingrediente.nutricion.carbohidratos) }} g ·
-                      G {{ "%.1f"|format(ingrediente.nutricion.grasas) }} g
+            <div class="ingredient-groups">
+              {% for grupo in grupos_ingredientes %}
+                <section class="ingredient-group" aria-labelledby="group-{{ grupo.id }}">
+                  <div class="ingredient-group-heading">
+                    <span class="group-icon" aria-hidden="true">
+                      <i class="bi {{ grupo.icono }}"></i>
                     </span>
-                  </label>
-                {% endfor %}
-              </div>
+                    <h4 id="group-{{ grupo.id }}">{{ grupo.nombre }}</h4>
+                    <span>{{ grupo.ingredientes|length }}</span>
+                  </div>
+                  <div class="ingredient-grid">
+                    {% for ingrediente in grupo.ingredientes %}
+                      <label
+                        class="ingredient-option"
+                        title="{{ ingrediente.porcion }} · {{ ingrediente.nutricion.calorias }} kcal"
+                      >
+                        <input
+                          type="checkbox"
+                          name="ingredientes"
+                          value="{{ ingrediente.id }}"
+                        >
+                        <span class="ingredient-check" aria-hidden="true">
+                          <i class="bi bi-check-lg"></i>
+                        </span>
+                        <span class="ingredient-copy">
+                          <strong>{{ ingrediente.nombre }}</strong>
+                          <small>
+                            {{ ingrediente.nutricion.calorias }} kcal ·
+                            {{ "%.1f"|format(ingrediente.nutricion.proteinas) }} g P
+                          </small>
+                        </span>
+                      </label>
+                    {% endfor %}
+                  </div>
+                </section>
+              {% endfor %}
+            </div>
+          </section>
 
-              <button type="submit" class="btn btn-success w-100 mt-4 icon-button-text">
+          <div class="run-bar">
+            <div class="selection-summary" aria-live="polite">
+              <strong id="selected-count">0</strong>
+              <span>ingredientes seleccionados</span>
+            </div>
+            <button type="submit" class="btn btn-success run-button">
+              <span class="submit-idle">
                 <i class="bi bi-cpu" aria-hidden="true"></i>
-                Recomendar recetas
-              </button>
-            </form>
+                Ejecutar sistema experto
+              </span>
+              <span class="submit-loading" aria-hidden="true">
+                <span class="spinner-border spinner-border-sm"></span>
+                Evaluando reglas...
+              </span>
+            </button>
+          </div>
+        </form>
+
+        <section class="results-panel" aria-labelledby="results-title">
+          <div class="results-header">
+            <div>
+              <span class="section-label">Conclusiones</span>
+              <h2 id="results-title">Resultados del motor</h2>
+              <p id="results-subtitle">
+                Las recomendaciones aparecerán ordenadas por certeza.
+              </p>
+            </div>
+            <div class="count-badge" aria-label="Cantidad de recetas">
+              <strong id="recipe-count">0</strong>
+              <span>recetas</span>
+            </div>
           </div>
 
-          <div class="col-lg-8">
-            <section class="results-panel">
-              <div class="results-header">
-                <div>
-                  <h2 id="results-title">Resultados</h2>
-                  <p id="results-subtitle">
-                    Los resultados aparecerán aquí sin recargar la página.
-                  </p>
-                </div>
-                <div id="recipe-count" class="count-badge">0</div>
-              </div>
-
-              <div id="status-box" class="alert alert-info mb-4" role="status" aria-live="polite">
-                Marca ingredientes y ejecuta el sistema experto.
-              </div>
-
-              <div id="results-grid" class="results-grid"></div>
-            </section>
+          <div id="status-box" class="status-message status-info" role="status" aria-live="polite">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <span>Selecciona los hechos iniciales y ejecuta el motor.</span>
           </div>
-        </div>
+
+          <div id="results-grid" class="results-grid">
+            <div class="empty-state">
+              <i class="bi bi-diagram-3" aria-hidden="true"></i>
+              <h3>Motor preparado</h3>
+              <p>Define objetivo, tipo de comida e ingredientes para iniciar la inferencia.</p>
+            </div>
+          </div>
+        </section>
       </section>
 
-      <footer class="team-section">
-        <div class="container py-4">
-          <div class="team-header">
-            <div>
-              <span class="eyebrow text-success">Equipo de trabajo</span>
-              <h2>Integrantes</h2>
-            </div>
-            <span class="project-badge">
-              <i class="bi bi-mortarboard" aria-hidden="true"></i>
-              Parcial 1 v 2.0.0 · Sistemas Expertos
-            </span>
+      <footer class="site-footer">
+        <div class="container footer-content">
+          <div>
+            <strong>FitExpert v2.0.0</strong>
+            <span>Parcial 1 · Sistemas Expertos</span>
           </div>
-
-          <div class="team-grid" aria-label="Integrantes del proyecto">
-            <article class="team-card">
-              <span class="team-icon" aria-hidden="true">
-                <i class="bi bi-person-badge"></i>
-              </span>
-              <div>
-                <h3>Alexis Sebastián Castro Ramírez</h3>
-                <p>CR0367042024</p>
-              </div>
-            </article>
-
-            <article class="team-card">
-              <span class="team-icon" aria-hidden="true">
-                <i class="bi bi-person-badge"></i>
-              </span>
-              <div>
-                <h3>Jefferson Jared Bonilla Meléndez</h3>
-                <p>BM0749042022</p>
-              </div>
-            </article>
-
-            <article class="team-card">
-              <span class="team-icon" aria-hidden="true">
-                <i class="bi bi-person-badge"></i>
-              </span>
-              <div>
-                <h3>Jaime Fernando Berrios Ortiz</h3>
-                <p>BO0310042024</p>
-              </div>
-            </article>
-          </div>
+          <p>Alexis Castro · Jefferson Bonilla · Jaime Berrios</p>
         </div>
       </footer>
     </main>

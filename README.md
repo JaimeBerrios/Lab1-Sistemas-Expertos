@@ -1,142 +1,213 @@
-# FitExpert 2.0.0 | Parcial 1 v 2.0.0 · Sistemas Expertos
+# Parcial 1 v 2.0.0 · Sistemas Expertos
 
-![Versión](https://img.shields.io/badge/versión-v2.0.0-1f7a4d)
-![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab)
-![Flask](https://img.shields.io/badge/Flask-3.x-20232a)
-![Pruebas](https://img.shields.io/badge/pruebas-13%20aprobadas-198754)
+## Guion de Defensa en Vivo de FitExpert
 
-FitExpert es un sistema basado en conocimiento que recomienda recetas a partir
-de los ingredientes disponibles, el objetivo nutricional y el tipo de comida.
-La versión 2.0.0 incorpora una base normalizada, coincidencia parcial con umbral
-estricto, scoring nutricional diferenciado, explicación de las conclusiones y
-validación robusta de la API.
+Este documento es el guion cronológico para proyectar, explicar y demostrar
+FitExpert frente al docente.
 
-> **Estado para la evaluación:** los cinco requerimientos del Primer Parcial
-> están implementados, documentados y cubiertos por pruebas automatizadas.
+**Duración sugerida:** 8 a 10 minutos.
 
-## Ficha del Proyecto
+**Objetivo:** demostrar que FitExpert es un sistema basado en conocimiento
+normalizado, con reglas de producción, segunda categoría, factor de certeza,
+umbral estricto, scoring nutricional, explicación y validación automatizada.
 
-| Campo | Valor |
+> Las referencias corresponden exactamente a la versión v2.0.0. Activar los
+> números de línea del editor antes de comenzar.
+
+## Preparación Antes de Proyectar
+
+1. Abrir el repositorio en el editor.
+2. Preparar las pestañas **templates/index.html**, **info.json**, **lab1.py** y
+   **tests/test_lab1.py**.
+3. Iniciar la aplicación:
+
+~~~powershell
+python lab1.py
+~~~
+
+4. Abrir http://127.0.0.1:5001/.
+5. Comprobar las pruebas:
+
+~~~powershell
+python -m unittest discover -s tests -v
+~~~
+
+Resultado esperado:
+
+~~~text
+Ran 13 tests
+OK
+~~~
+
+## Mapa Rápido de Evidencias
+
+| Requerimiento | Archivo | Líneas |
+| --- | --- | ---: |
+| Versión y metadatos | **info.json** | 3-14 |
+| Header v2.0.0 | **templates/index.html** | 26 |
+| Tipos de comida | **info.json** | 35-41 |
+| 27 ingredientes | **info.json** | 43-71 |
+| 32 recetas | **info.json** | 72-105 |
+| 32 reglas | **info.json** | 106-139 |
+| Hechos iniciales | **lab1.py** | 91-97 |
+| Fórmula de coincidencia | **lab1.py** | 100-119 |
+| Motor, categoría y umbral | **lab1.py** | 122-146 |
+| Cuatro macros por receta | **lab1.py** | 150-162 |
+| Scoring | **lab1.py** | 170-213 |
+| Explicación | **lab1.py** | 216-232 |
+| Faltantes y regla activada | **lab1.py** | 248-287 |
+| Ordenamiento | **lab1.py** | 290-300 |
+| Validación | **lab1.py** | 327-358 |
+| Suite automatizada | **tests/test_lab1.py** | 1-223 |
+
+---
+
+## Acto 1: Introducción y Versión del Proyecto
+
+### Qué mostrar en pantalla
+
+1. Navegador: página principal de FitExpert.
+2. **templates/index.html**, línea **26**.
+3. **info.json**, líneas **3-14**.
+
+### Qué señalar
+
+- El header “Parcial 1 v 2.0.0 · Sistemas Expertos”.
+- Nombre, versión, tipo de inferencia, umbral y ordenamiento.
+
+### Qué decir
+
+> Buenos días. Nuestro proyecto se llama FitExpert y corresponde al Parcial 1,
+> versión 2.0.0, de Sistemas Expertos. Recomienda recetas utilizando hechos
+> iniciales, reglas de producción y un factor de certeza explicable.
+>
+> info.json contiene la base de conocimiento; lab1.py implementa el motor y la
+> API Flask; index.html, styles.css y app.js forman la interfaz; y
+> tests/test_lab1.py verifica la consistencia y el comportamiento.
+>
+> La entrada combina ingredientes, objetivo nutricional y tipo de comida. La
+> salida contiene recetas con más del 50 por ciento, ordenadas por certeza y
+> scoring nutricional.
+
+### Transición
+
+> Primero mostraremos cómo se normalizó y extendió el conocimiento.
+
+---
+
+## Acto 2: Normalización y Extensión de la Base de Conocimiento
+
+### Qué mostrar en pantalla
+
+| Paso | Archivo | Líneas | Evidencia |
+| ---: | --- | ---: | --- |
+| 1 | **info.json** | 43-71 | 27 ingredientes |
+| 2 | **info.json** | 44-70 | Cuatro atributos nutricionales |
+| 3 | **info.json** | 72-105 | 32 recetas |
+| 4 | **info.json** | 106-139 | 32 reglas R001 a R032 |
+| 5 | **lab1.py** | 150-162 | Cálculo de macros |
+
+### Acción
+
+1. Abrir **info.json** en la línea 43.
+2. Mostrar el ingrediente huevo en la línea 44.
+3. Mostrar el final del arreglo, línea 70.
+4. Mostrar recetas, líneas 72-105.
+5. Mostrar reglas, líneas 106-139.
+6. Cambiar a **lab1.py**, líneas 150-162.
+
+### Qué decir
+
+> Abrimos info.json para validar que los hechos y reglas están normalizados bajo
+> un esquema homogéneo.
+>
+> Entre las líneas 43 y 71 hay 27 ingredientes. Cada registro utiliza un ID en
+> snake_case, nombre, categoría, porción, calorías, proteínas, carbohidratos y
+> grasas.
+>
+> Entre las líneas 72 y 105 están las 32 recetas. Cada una declara ID,
+> descripción, ingredientes, tipo, dificultad y tiempo. Entre las líneas 106 y
+> 139 están las 32 reglas, con condiciones y conclusión separadas.
+>
+> Los macros no se duplican dentro de cada receta. Las recetas referencian IDs y
+> calcular_nutricion, líneas 150-162 de lab1.py, suma los cuatro valores. Esto
+> evita inconsistencias en datos derivados.
+
+### Explicación técnica
+
+1. **Fuente única:** **info.json** contiene el conocimiento.
+2. **Integridad referencial:** recetas y reglas usan IDs.
+3. **Desacoplamiento:** agregar conocimiento no cambia el motor.
+
+### Si preguntan por los totales
+
+> Son 27 ingredientes, 32 recetas, 32 reglas, 3 objetivos y 5 valores de tipo.
+
+### Transición
+
+> Con la base normalizada, veremos cómo los hechos alimentan el motor.
+
+---
+
+## Acto 3: Motor de Inferencia y Segunda Categoría tipo_comida
+
+### Qué mostrar en pantalla
+
+| Archivo | Líneas | Evidencia |
+| --- | ---: | --- |
+| **info.json** | 35-41 | todos, desayuno, almuerzo, cena y snack |
+| **lab1.py** | 91-97 | Construcción de hechos |
+| **lab1.py** | 122-130 | Recorrido y filtro |
+| **lab1.py** | 132-146 | Coincidencia y activación |
+
+### Acción
+
+1. Mostrar **info.json**, líneas 35-41.
+2. Cambiar a **lab1.py**, líneas 91-97.
+3. Señalar objetivo_id, tipo_comida_id e ingredientes_disponibles.
+4. Mostrar motor_inferencia, líneas 122-146.
+5. Detenerse en las líneas 129-130.
+
+### Qué decir
+
+> Pasamos al núcleo del motor, donde se captura la segunda dimensión solicitada.
+>
+> crear_hechos construye la memoria de trabajo con objetivo, tipo e
+> ingredientes, y elimina duplicados.
+>
+> Los tipos son desayuno, almuerzo, cena, snack y todos. En las líneas 122 a 146
+> el motor recorre las reglas. Las líneas 129 y 130 descartan una regla si no
+> pertenece al tipo solicitado. Con todos se evalúan todas las categorías.
+
+### Precisión conceptual
+
+| Dimensión | Responsabilidad |
 | --- | --- |
-| Evaluación | Parcial 1 v 2.0.0 · Sistemas Expertos |
-| Sistema | FitExpert |
-| Versión | v2.0.0 |
-| Área de conocimiento | Nutrición y recomendación de recetas |
-| Paradigma | Sistema basado en conocimiento con reglas de producción |
-| Estrategia | Evaluación hacia adelante con coincidencia parcial |
-| Backend | Python y Flask |
-| Frontend | HTML, CSS y JavaScript |
-| Base de conocimiento | `info.json` |
-| Endpoint principal | `POST /api/recommend` |
+| tipo_comida | Filtra reglas |
+| Objetivo | Define scoring de desempate |
+| Ingredientes | Determinan coincidencia |
 
-## Cumplimiento de Requerimientos del Parcial
+### Si preguntan por encadenamiento
 
-| Requerimiento de la cátedra | Implementación en FitExpert 2.0.0 | Evidencia |
-| --- | --- | --- |
-| Normalizar y extender la base | Fuente única con 27 ingredientes, 32 recetas y 32 reglas | `info.json` |
-| Agregar una segunda categoría | `tipo_comida`: desayuno, almuerzo, cena, snack o todos | `info.json`, `lab1.py`, interfaz |
-| Calcular confianza y filtrar | Cobertura porcentual de ingredientes; solo se conserva $P > 50\%$ | `calcular_coincidencia()`, `motor_inferencia()` |
-| Ordenar y desempatar | Confianza descendente, scoring descendente y nombre ascendente | `recomendar_recetas()` |
-| Corregir scoring y validación | Cuatro componentes nutricionales y respuestas HTTP 400 consistentes | `evaluar_objetivo()`, `validar_payload()` |
-| Incorporar pruebas | Consistencia, inferencia, API, frontend y compatibilidad | `tests/test_lab1.py` |
+> El proceso avanza de hechos a conclusiones. Las recetas son terminales y no
+> son premisas de otras reglas; una pasada alcanza el punto de terminación.
 
-### 1. Normalización y Extensión de la Base de Conocimiento
+### Transición
 
-`info.json` es la fuente canónica: el código no mantiene una copia paralela de
-ingredientes, recetas o reglas. Al iniciar, `lab1.py` carga el JSON y construye
-índices por identificador.
+> Después del filtro categórico, el motor calcula cuánto conoce de cada regla.
 
-| Entidad | Total | Identificación | Atributos uniformes |
-| --- | ---: | --- | --- |
-| Ingredientes | 27 | ID en `snake_case` | nombre, categoría, porción y nutrición |
-| Recetas | 32 | ID en `snake_case` | nombre, descripción, ingredientes, tipo, dificultad y tiempo |
-| Reglas | 32 | `R001` a `R032` | condiciones y conclusión |
-| Objetivos | 3 | ID semántico | nombre y criterio de scoring |
-| Tipos de comida | 5 | ID semántico | nombre y condición de filtro |
+---
 
-Cada ingrediente utiliza el mismo esquema nutricional:
+## Acto 4: Algoritmo de Certeza y Filtro Estricto Mayor al 50%
 
-```json
-{
-  "id": "pollo",
-  "nombre": "Pollo",
-  "categoria": "proteina_animal",
-  "porcion": "100 g",
-  "nutricion": {
-    "calorias": 165,
-    "proteinas": 31,
-    "carbohidratos": 0,
-    "grasas": 3.6
-  }
-}
-```
+### Qué mostrar en pantalla
 
-Cada receta posee metadatos consistentes:
+| Archivo | Líneas | Evidencia |
+| --- | ---: | --- |
+| **lab1.py** | 100-119 | Coincidentes, faltantes y porcentaje |
+| **lab1.py** | 132-136 | Umbral y descarte |
 
-```json
-{
-  "id": "bowl_de_pollo",
-  "nombre": "Bowl de pollo",
-  "descripcion": "Pollo acompañado de arroz y brócoli.",
-  "ingredientes": ["pollo", "arroz", "brocoli"],
-  "tipo_comida": "almuerzo",
-  "dificultad": "facil",
-  "tiempo_preparacion_min": 30
-}
-```
-
-Los hechos iniciales también se normalizan antes de inferir:
-
-```json
-{
-  "objetivo_id": "perder_grasa",
-  "tipo_comida_id": "almuerzo",
-  "ingredientes_disponibles": ["pollo", "arroz"]
-}
-```
-
-Los identificadores duplicados se eliminan conservando el orden de entrada.
-Un ingrediente inexistente no se ignora silenciosamente: produce un error de
-validación.
-
-### 2. Segunda Categoría de Inferencia: `tipo_comida`
-
-| Valor | Significado |
-| --- | --- |
-| `desayuno` | Evalúa únicamente reglas de desayuno |
-| `almuerzo` | Evalúa únicamente reglas de almuerzo |
-| `cena` | Evalúa únicamente reglas de cena |
-| `snack` | Evalúa únicamente reglas de snack |
-| `todos` | Omite el filtro de categoría y evalúa todas las reglas |
-
-El tipo de comida actúa como filtro categórico. El objetivo nutricional no
-descarta reglas: calcula la adecuación nutricional de las recetas que superaron
-el filtro y el umbral. Las dos dimensiones cumplen funciones diferentes:
-
-| Dimensión | Función |
-| --- | --- |
-| `tipo_comida` | Decide qué conjunto de reglas puede participar |
-| `objetivo` | Determina cómo se puntúan y desempatan las recetas |
-
-Una regla de producción normalizada combina ingredientes y tipo:
-
-```json
-{
-  "id": "R010",
-  "condiciones": {
-    "ingredientes": ["pollo", "arroz", "brocoli"],
-    "tipo_comida": "almuerzo"
-  },
-  "conclusion": {
-    "receta_id": "bowl_de_pollo"
-  }
-}
-```
-
-### 3. Algoritmo de Confianza y Umbral Estricto
-
-Sea $D$ el conjunto de ingredientes disponibles y $R$ el conjunto de
-ingredientes requeridos por una regla. FitExpert calcula:
+### Fórmula
 
 $$
 P =
@@ -148,306 +219,333 @@ P =
 \times 100
 $$
 
-En notación compacta:
+### Acción
 
-$$
-P = \frac{|D \cap R|}{|R|} \times 100
-$$
+1. Abrir **lab1.py**, línea 100.
+2. Señalar el conjunto de disponibles, línea 101.
+3. Señalar coincidentes y faltantes, líneas 102-107.
+4. Señalar la operación, líneas 108-112.
+5. Mostrar las líneas 132-136.
 
-Ejemplo para una regla que requiere pollo, arroz y brócoli:
+### Qué decir
 
-$$
-P = \frac{|\{pollo, arroz\}|}{|\{pollo, arroz, brócoli\}|}
-\times 100 = 66.67\%
-$$
+> Aquí se calcula la confianza con teoría de conjuntos.
+>
+> Los disponibles se convierten en conjunto. Luego obtenemos coincidentes y
+> faltantes. El porcentaje es la cantidad coincidente dividida entre la cantidad
+> requerida, multiplicada por cien.
+>
+> En las líneas 135 y 136, si el porcentaje es menor o igual a 50 se ejecuta
+> continue y la regla se descarta. Solo se activan reglas con más de 50 por
+> ciento.
 
-La condición de activación es estricta:
+### Ejemplo oral
 
-$$
-P > 50\%
-$$
+> Pollo y arroz contra una regla de pollo, arroz y brócoli produce dos de tres:
+> 66.67 por ciento. La regla se conserva y brócoli aparece como faltante.
 
-Por tanto:
+### Aclaración
 
-| Confianza | Resultado |
-| ---: | --- |
-| 100 % | Se recomienda; receta completa |
-| 66.67 % | Se recomienda; se informan ingredientes faltantes |
-| 50 % | Se descarta |
-| Menor que 50 % | Se descarta |
+> Es certeza determinista por cobertura, no probabilidad estadística aprendida.
 
-Este valor es un **factor de confianza determinista por cobertura**, no una
-probabilidad estadística obtenida mediante aprendizaje automático.
+### Transición
 
-### 4. Ordenamiento Descendente y Desempate
+> Las reglas válidas se evalúan según el objetivo y luego se ordenan.
 
-Las recetas que superan el umbral se ordenan con una clave compuesta:
+---
 
-1. Mayor a menor confianza $P$.
-2. Si $P$ empata, mayor puntuación nutricional para el objetivo seleccionado.
-3. Si ambos valores empatan, nombre de receta en orden alfabético.
+## Acto 5: Ordenamiento Descendente y Scoring Nutricional
 
-La confianza tiene prioridad sobre el scoring. Una receta con 100 % siempre
-aparece antes que una con 66.67 %, aunque la segunda tenga una puntuación
-nutricional superior.
+### Qué mostrar en pantalla
 
-El scoring usa cuatro componentes normalizados y produce un valor de 0 a 100:
+| Archivo | Líneas | Evidencia |
+| --- | ---: | --- |
+| **lab1.py** | 170-213 | Fórmulas por objetivo |
+| **lab1.py** | 290-300 | Ordenamiento compuesto |
 
-| Objetivo | Componentes y peso máximo |
-| --- | --- |
-| Aumentar masa muscular | proteína 40, energía 20, carbohidratos 25, grasas 15 |
-| Perder grasa | calorías 35, proteína 30, carbohidratos 20, grasas 15 |
-| Mantener peso | energía 30, proteína 25, carbohidratos 25, grasas 20 |
+### Acción
 
-Las etiquetas se asignan así:
+1. Mostrar evaluar_objetivo, líneas 170-213.
+2. Señalar masa muscular, perder grasa y mantenimiento.
+3. Mostrar recomendar_recetas, líneas 290-300.
+4. Detenerse en las líneas 294-299.
 
-| Puntuación | Adecuación |
-| ---: | --- |
-| 75 a 100 | Muy adecuada |
-| 55 a 74.99 | Adecuada |
-| Menor que 55 | Complementaria |
+### Qué decir
 
-### 5. Validación Robusta y Pruebas Automatizadas
+> El scoring cambia por objetivo. Masa muscular pondera proteína, energía,
+> carbohidratos y grasas. Perder grasa prioriza control calórico y proteína.
+> Mantener peso mide cercanía a una comida equilibrada.
+>
+> En las líneas 294 a 300 está el ordenamiento. El signo negativo produce orden
+> descendente. La primera clave es el porcentaje; la segunda es el scoring; y el
+> nombre es un tercer criterio estable.
 
-El endpoint valida el cuerpo antes de ejecutar el motor:
+### Regla para memorizar
 
-| Entrada inválida | Comportamiento |
-| --- | --- |
-| JSON malformado | HTTP 400 |
-| Cuerpo que no es un objeto JSON | HTTP 400 |
-| Objetivo nulo, desconocido o de tipo incorrecto | HTTP 400 |
-| Tipo de comida nulo, desconocido o de tipo incorrecto | HTTP 400 |
-| `ingredientes` ausente o no es una lista | HTTP 400 |
-| Lista de ingredientes vacía | HTTP 400 |
-| Elementos que no son texto | HTTP 400 |
-| Identificadores desconocidos | HTTP 400 con detalle |
-| Ingredientes duplicados | Se normalizan sin inflar los totales |
+~~~text
+1.º Mayor certeza
+2.º Mayor scoring, solo si la certeza empata
+3.º Nombre alfabético, solo si ambos empatan
+~~~
 
-La suite `tests/test_lab1.py` comprueba:
+### Transición
 
-- Esquema y consistencia de 27 ingredientes, 32 recetas y 32 reglas.
-- Correspondencia entre condiciones de reglas y metadatos de recetas.
-- Ausencia de ingredientes o conclusiones desconocidas.
-- Exclusión de coincidencias exactamente iguales al 50 %.
-- Orden descendente por confianza.
-- Desempate mediante puntuación nutricional.
-- Filtro por tipo de comida.
-- Rankings distintos entre objetivos.
-- Casos válidos e inválidos de la API.
-- Presencia de la segunda categoría en la interfaz.
-- Compatibilidad del alias `/api/recomendar`.
-- Estado y metadatos reportados por `/health`.
+> Finalmente, el sistema no solo concluye: justifica la recomendación.
 
-## Arquitectura del Proyecto
+---
 
-| Archivo | Responsabilidad |
-| --- | --- |
-| `info.json` | Fuente única de catálogos, ingredientes, recetas y reglas |
-| `lab1.py` | Carga, normalización, inferencia, scoring, explicación y API |
-| `templates/index.html` | Formulario y estructura semántica de la interfaz |
-| `static/app.js` | Captura de hechos, consumo de API y presentación |
-| `static/styles.css` | Estados visuales, métricas y resultados |
-| `tests/test_lab1.py` | Pruebas unitarias y de integración con Flask |
+## Acto 6: Explicación y Manejo de Errores
 
-Flujo entre componentes:
+### Qué mostrar en pantalla
 
-```text
-Usuario
-  │
-  ▼
-index.html + app.js
-  │  POST /api/recommend
-  ▼
-validar_payload()
-  │
-  ▼
-crear_hechos()
-  │
-  ▼
-motor_inferencia()
-  ├─ filtra por tipo_comida
-  ├─ calcula P por cada regla
-  └─ conserva únicamente P > 50 %
-  │
-  ▼
-calcular_nutricion() + evaluar_objetivo()
-  │
-  ▼
-ordenar por P, scoring y nombre
-  │
-  ▼
-construir_explicacion()
-  │
-  ▼
-Respuesta JSON y tarjetas de resultados
-```
+| Archivo | Líneas | Evidencia |
+| --- | ---: | --- |
+| **lab1.py** | 216-232 | Explicación natural |
+| **lab1.py** | 248-287 | Faltantes y regla activada |
+| **lab1.py** | 327-358 | Validación |
+| **tests/test_lab1.py** | 1-223 | 13 pruebas |
 
-## API JSON
+### Acción
 
-### Endpoint Canónico
+1. Mostrar construir_explicacion, líneas 216-232.
+2. Señalar ingredientes_faltantes, líneas 226-231.
+3. Mostrar la respuesta, líneas 248-287.
+4. Señalar regla_activada, líneas 280-286.
+5. Mostrar validar_payload, líneas 327-358.
+6. Proyectar la terminal con las pruebas.
 
-```http
+### Qué decir
+
+> El sistema es transparente: explica por qué se activó cada regla e informa
+> qué ingredientes faltan.
+>
+> construir_explicacion genera una frase con regla, fracción coincidente,
+> porcentaje y scoring. La respuesta contiene nutrición, porcentaje,
+> disponibles, faltantes y regla activada. La interfaz lo presenta en un panel
+> desplegable.
+>
+> validar_payload rechaza JSON incorrecto, nulos, listas vacías, tipos inválidos
+> e ingredientes desconocidos. La suite ejecuta 13 pruebas de consistencia,
+> umbral, ordenamiento, categorías, API e interfaz.
+
+### Comando para proyectar
+
+~~~powershell
+python -m unittest discover -s tests -v
+~~~
+
+### Transición
+
+> Ahora comprobaremos los requerimientos con tres casos preparados.
+
+---
+
+## Acto 7: Demostración en Vivo
+
+### Instrucciones
+
+1. Volver al navegador.
+2. Usar **Limpiar** entre casos.
+3. Confirmar objetivo y tipo.
+4. Leer primero el porcentaje y luego abrir la explicación.
+
+### Resumen de Casos
+
+| Caso | Objetivo | Tipo | Ingredientes | Salida esperada |
+| ---: | --- | --- | --- | --- |
+| 1 | Aumentar masa muscular | Desayuno | Chía, Yogur griego, Banana | Pudín de chía, 100 %, scoring 62.55 |
+| 2 | Perder grasa | Almuerzo | Pollo, Arroz integral | Pollo 100 %; Bowl 66.67 % |
+| 3 | Mantener peso | Snack | Manzana | 0 recetas; 50 % o menos se descarta |
+
+### Caso 1: Coincidencia Completa
+
+#### Acción
+
+1. Presionar **Cargar caso demo**, o seleccionar:
+   - Objetivo: **Aumentar masa muscular**.
+   - Tipo: **Desayuno**.
+   - Ingredientes: **Semillas de chía**, **Yogur griego**, **Banana**.
+2. Presionar **Ejecutar sistema experto**.
+3. Abrir “¿Por qué el sistema experto recomienda esto?”.
+
+#### Resultado exacto
+
+| Receta | Certeza | Scoring | Faltantes | Regla |
+| --- | ---: | ---: | --- | --- |
+| Pudín de chía | 100 % | 62.55 | Ninguno | R032 |
+
+#### Qué decir
+
+> Tres de tres ingredientes equivalen a 100 por ciento. La receta está completa
+> y la regla R032 queda trazada.
+
+#### Descartes
+
+Las demás reglas de desayuno comparten como máximo un ingrediente. Pancakes usa
+solo banana de tres requeridos: 33.33 %.
+
+### Caso 2: Coincidencia Parcial Mayor al 50%
+
+#### Acción
+
+1. Presionar **Limpiar**.
+2. Objetivo: **Perder grasa**.
+3. Tipo: **Almuerzo**.
+4. Ingredientes: **Pollo** y **Arroz integral**.
+5. Ejecutar.
+
+#### Resultado exacto
+
+| Orden | Receta | Certeza | Scoring | Faltantes | Regla |
+| ---: | --- | ---: | ---: | --- | --- |
+| 1 | Pollo a la plancha | 100 % | 64.40 | Ninguno | R004 |
+| 2 | Bowl de pollo | 66.67 % | 89.94 | Brócoli | R010 |
+
+#### Qué decir
+
+> Pollo aparece primero por su certeza de 100 por ciento. El bowl tiene dos de
+> tres ingredientes, 66.67 por ciento, e informa que falta brócoli.
+>
+> Aunque el bowl tiene mayor scoring, no desplaza al primer resultado porque la
+> certeza es la clave primaria.
+
+#### Descartes
+
+- Bowl fitness: 2 de 4 = 50 %, descartado.
+- Bowl completo: 2 de 5 = 40 %, descartado.
+- Bowl mexicano: 2 de 6 = 33.33 %, descartado.
+- Otras categorías: descartadas por tipo_comida.
+
+### Caso 3: Umbral Estricto Menor o Igual al 50%
+
+#### Acción
+
+1. Presionar **Limpiar**.
+2. Objetivo: **Mantener peso**.
+3. Tipo: **Snack**.
+4. Ingrediente: **Manzana**.
+5. Ejecutar.
+
+#### Resultado exacto
+
+~~~text
+0 recetas
+Ninguna receta superó el umbral estricto de coincidencia mayor al 50%.
+~~~
+
+#### Qué decir
+
+> Manzana con almendras coincide en uno de dos ingredientes, exactamente 50 por
+> ciento. Como se exige un valor mayor, se descarta. El parfait coincide en uno
+> de cuatro, 25 por ciento, y también se descarta.
+
+### Cierre de la demostración
+
+> Los casos prueban coincidencia completa, recomendación parcial con faltantes y
+> descarte estricto. También prueban la segunda categoría, el orden y la
+> explicación.
+
+---
+
+## Acto 8: Preguntas Frecuentes y Justificaciones
+
+### ¿Por qué reglas de producción?
+
+> Porque el conocimiento se expresa con condiciones y conclusiones legibles.
+> Cada recomendación se rastrea hasta una regla concreta.
+
+### ¿Es una probabilidad estadística?
+
+> No. Es certeza determinista por cobertura. No proviene de aprendizaje
+> automático ni de frecuencias históricas.
+
+### ¿Cómo se garantiza la consistencia?
+
+> info.json es la única fuente de verdad. Las pruebas validan referencias entre
+> reglas, recetas e ingredientes.
+
+### ¿Por qué no guardar macros totales en cada receta?
+
+> Serían datos derivados duplicados. La receta referencia ingredientes y
+> calcular_nutricion suma los cuatro valores.
+
+### ¿Cómo escala?
+
+> La complejidad es O(n × m), con n reglas y m ingredientes promedio. Para una
+> base mayor se puede indexar por tipo o ingrediente, o utilizar RETE.
+
+### ¿Cómo se agrega una receta?
+
+> Se registran ingredientes nuevos, se crea la receta con IDs válidos y una
+> regla que concluya su ID. Después se ejecutan las pruebas.
+
+### ¿Por qué recomendar recetas incompletas?
+
+> Si supera 50 por ciento es una opción viable y el sistema indica exactamente
+> qué falta.
+
+### ¿Qué hace cada dimensión?
+
+> El tipo filtra reglas, la certeza mide cobertura y el objetivo calcula scoring
+> para desempatar.
+
+### ¿Cómo se evita que un nutriente domine?
+
+> Cada objetivo distribuye 100 puntos entre cuatro componentes. La proteína
+> nunca aporta más de 40 puntos.
+
+### ¿Qué pasa con una entrada inválida?
+
+> El motor no se ejecuta. La API responde HTTP 400 con detalles antes de inferir.
+
+---
+
+## Cierre Oral
+
+### Qué mostrar
+
+Volver a la interfaz con el Caso 2 y la explicación abierta.
+
+### Qué decir
+
+> FitExpert v2.0.0 cumple el parcial con 27 ingredientes, 32 recetas y 32 reglas;
+> segunda categoría; certeza con umbral mayor al 50 por ciento; scoring;
+> ordenamiento; explicación trazable y validación automatizada.
+>
+> La interfaz permite observar la conclusión y el proceso que la produjo. Con
+> esto finalizamos la demostración.
+
+---
+
+## Apéndice: API
+
+~~~http
 POST /api/recommend
 Content-Type: application/json
-```
+~~~
 
-`POST /api/recomendar` se conserva como alias compatible, pero toda nueva
-integración debe utilizar `/api/recommend`.
-
-### Payload
-
-Los tres campos son obligatorios:
-
-```json
+~~~json
 {
   "objetivo": "perder_grasa",
   "tipo_comida": "almuerzo",
   "ingredientes": ["pollo", "arroz"]
 }
-```
+~~~
 
-Valores válidos:
+Consulta:
 
-| Campo | Valores |
-| --- | --- |
-| `objetivo` | `aumentar_masa_muscular`, `perder_grasa`, `mantener_peso` |
-| `tipo_comida` | `desayuno`, `almuerzo`, `cena`, `snack`, `todos` |
-| `ingredientes` | IDs existentes en `info.json` |
+~~~powershell
+$body = @{ objetivo = "perder_grasa"; tipo_comida = "almuerzo"; ingredientes = @("pollo", "arroz") } | ConvertTo-Json
+Invoke-RestMethod -Uri "http://127.0.0.1:5001/api/recommend" -Method Post -ContentType "application/json" -Body $body
+~~~
 
-Ejemplo con PowerShell:
+POST /api/recomendar permanece como alias.
 
-```powershell
-$body = @{
-  objetivo = "perder_grasa"
-  tipo_comida = "almuerzo"
-  ingredientes = @("pollo", "arroz")
-} | ConvertTo-Json
-
-Invoke-RestMethod `
-  -Uri "http://127.0.0.1:5001/api/recommend" `
-  -Method Post `
-  -ContentType "application/json" `
-  -Body $body
-```
-
-### Esquema de Respuesta Exitosa
-
-| Campo | Contenido |
-| --- | --- |
-| `hechos` | Memoria de trabajo normalizada |
-| `objetivo` | ID, nombre y criterio nutricional |
-| `tipo_comida` | ID y nombre del filtro aplicado |
-| `umbral_coincidencia` | Valor 50.0; el operador aplicado es `>` |
-| `ingredientes` | Ingredientes disponibles con metadatos completos |
-| `recetas` | Recomendaciones ordenadas |
-| `totales` | Cantidad de ingredientes, recetas y reglas activadas |
-
-Cada elemento de `recetas` contiene:
-
-| Campo | Contenido |
-| --- | --- |
-| `id`, `nombre`, `descripcion` | Identidad de la receta |
-| `tipo_comida` | Categoría de la receta |
-| `dificultad`, `tiempo_preparacion_min` | Metadatos de preparación |
-| `ingredientes` | Requerimientos con nutrición por porción |
-| `nutricion` | Totales de calorías, proteínas, carbohidratos y grasas |
-| `adecuacion` | Etiqueta derivada del scoring |
-| `puntuacion_objetivo` | Scoring total de 0 a 100 |
-| `componentes_puntuacion` | Desglose de la puntuación |
-| `coincidencia` | Porcentaje, cantidades, disponibles y faltantes |
-| `regla_activada` | ID y tipo de la regla |
-| `explicacion` | Justificación trazable de la recomendación |
-
-Fragmento real de respuesta para `pollo + arroz`:
-
-```json
-{
-  "hechos": {
-    "objetivo_id": "perder_grasa",
-    "tipo_comida_id": "almuerzo",
-    "ingredientes_disponibles": ["pollo", "arroz"]
-  },
-  "objetivo": {
-    "id": "perder_grasa",
-    "nombre": "Perder grasa",
-    "criterio": "Favorece control calórico, proteína suficiente y cantidades moderadas de carbohidratos y grasas."
-  },
-  "tipo_comida": {
-    "id": "almuerzo",
-    "nombre": "Almuerzo"
-  },
-  "umbral_coincidencia": 50.0,
-  "recetas": [
-    {
-      "id": "pollo_a_la_plancha",
-      "puntuacion_objetivo": 64.4,
-      "coincidencia": {
-        "porcentaje": 100.0,
-        "cantidad_disponible": 1,
-        "cantidad_requerida": 1,
-        "ingredientes_disponibles": [
-          {"id": "pollo", "nombre": "Pollo"}
-        ],
-        "ingredientes_faltantes": []
-      },
-      "regla_activada": {
-        "id": "R004",
-        "tipo_comida": "almuerzo"
-      }
-    },
-    {
-      "id": "bowl_de_pollo",
-      "puntuacion_objetivo": 89.94,
-      "coincidencia": {
-        "porcentaje": 66.67,
-        "cantidad_disponible": 2,
-        "cantidad_requerida": 3,
-        "ingredientes_disponibles": [
-          {"id": "pollo", "nombre": "Pollo"},
-          {"id": "arroz", "nombre": "Arroz integral"}
-        ],
-        "ingredientes_faltantes": [
-          {"id": "brocoli", "nombre": "Brócoli"}
-        ]
-      },
-      "regla_activada": {
-        "id": "R010",
-        "tipo_comida": "almuerzo"
-      }
-    }
-  ],
-  "totales": {
-    "recetas": 2,
-    "ingredientes": 2,
-    "reglas_activadas": 2
-  }
-}
-```
-
-Aunque el bowl obtiene mayor scoring, aparece después porque 66.67 % es menor
-que 100 %. Esto demuestra la prioridad del criterio de confianza.
-
-### Respuesta de Error
-
-```json
-{
-  "error": "Solicitud inválida.",
-  "detalles": [
-    "Debes proporcionar al menos un ingrediente."
-  ]
-}
-```
-
-Los errores de entrada devuelven HTTP 400 y una lista `detalles` apta para
-presentarse al usuario.
-
-### Estado del Servicio
-
-```http
+~~~http
 GET /health
-```
+~~~
 
-```json
+~~~json
 {
   "status": "ok",
   "version": "2.0.0",
@@ -456,278 +554,4 @@ GET /health
   "recetas": 32,
   "reglas": 32
 }
-```
-
-## Guía de Defensa del Sistema Experto
-
-### Arquitectura del Motor de Inferencia
-
-FitExpert utiliza reglas de producción transparentes y deterministas. Los hechos
-iniciales ingresan a la memoria de trabajo y se evalúan hacia adelante contra
-las condiciones de cada regla.
-
-El ciclo de inferencia es:
-
-1. Construir y normalizar la memoria de trabajo.
-2. Seleccionar las reglas compatibles con `tipo_comida`.
-3. Comparar el subconjunto disponible con los ingredientes de cada regla.
-4. Calcular el factor de confianza $P$.
-5. Activar únicamente reglas con $P > 50\%$.
-6. Convertir cada conclusión en una receta candidata.
-7. Calcular nutrición y scoring según el objetivo.
-8. Ordenar y generar una explicación.
-
-Las conclusiones son recetas terminales; no son premisas de otras reglas. Por
-esa razón, una pasada completa sobre la base de reglas alcanza el punto de
-terminación y no se necesita reinyectar conclusiones para nuevos ciclos.
-
-Complejidad aproximada:
-
-$$
-O(n \times m)
-$$
-
-donde $n$ es el número de reglas evaluadas y $m$ el promedio de ingredientes
-por regla. Con 32 reglas, el costo es pequeño y predecible.
-
-### Flujo de Ejecución Paso a Paso
-
-#### 1. Captura de Hechos Iniciales
-
-El frontend envía ingredientes, objetivo y tipo de comida. `validar_payload()`
-rechaza valores incorrectos y `crear_hechos()` elimina duplicados.
-
-#### 2. Evaluación de Reglas de Producción
-
-`motor_inferencia()` recorre las reglas. Cuando el tipo solicitado no es
-`todos`, omite de inmediato las reglas de otras categorías.
-
-#### 3. Cálculo de Confianza
-
-`calcular_coincidencia()` obtiene la intersección, los faltantes y $P$. Una
-regla con 50 % exacto no se activa.
-
-#### 4. Ponderación Nutricional
-
-`calcular_nutricion()` suma los cuatro valores nutricionales.
-`evaluar_objetivo()` aplica pesos distintos para masa muscular, pérdida de
-grasa o mantenimiento.
-
-#### 5. Ordenamiento y Filtrado
-
-Primero se aplica $P > 50\%$. Después se ordena por confianza descendente y,
-solo en empate, por scoring descendente.
-
-#### 6. Módulo de Explicación
-
-`construir_explicacion()` informa la regla activada, la fracción coincidente,
-el porcentaje, el scoring y los ingredientes que faltan. La recomendación es
-auditable y no funciona como una caja negra.
-
-### Casos de Prueba para Demostración en Vivo
-
-#### Caso 1: prioridad de confianza sobre scoring
-
-```json
-{
-  "objetivo": "perder_grasa",
-  "tipo_comida": "almuerzo",
-  "ingredientes": ["pollo", "arroz"]
-}
-```
-
-Salida esperada:
-
-| Orden | Receta | Confianza | Scoring | Faltante |
-| ---: | --- | ---: | ---: | --- |
-| 1 | Pollo a la plancha | 100 % | 64.40 | Ninguno |
-| 2 | Bowl de pollo | 66.67 % | 89.94 | Brócoli |
-
-Punto de defensa: el pollo aparece primero por tener mayor confianza, aunque el
-bowl tiene mayor scoring.
-
-#### Caso 2: segunda categoría y recomendación parcial
-
-```json
-{
-  "objetivo": "mantener_peso",
-  "tipo_comida": "cena",
-  "ingredientes": ["pollo", "brocoli", "quinoa"]
-}
-```
-
-Salida esperada:
-
-| Orden | Receta | Confianza | Scoring | Faltante |
-| ---: | --- | ---: | ---: | --- |
-| 1 | Pollo con brócoli | 100 % | 42.46 | Ninguno |
-| 2 | Bowl de pollo y quinoa | 75 % | 70.22 | Zanahoria |
-
-Punto de defensa: solo aparecen reglas clasificadas como cena. Las reglas de
-almuerzo con ingredientes similares quedan fuera antes de calcular el ranking.
-
-#### Caso 3: demostración del umbral estricto
-
-```json
-{
-  "objetivo": "mantener_peso",
-  "tipo_comida": "snack",
-  "ingredientes": ["manzana"]
-}
-```
-
-Salida esperada:
-
-```json
-{
-  "recetas": [],
-  "totales": {
-    "recetas": 0,
-    "ingredientes": 1,
-    "reglas_activadas": 0
-  }
-}
-```
-
-Punto de defensa: `manzana_con_almendras` coincide en 1 de 2 ingredientes,
-equivalente a 50 %. Se descarta porque el requisito es $P > 50\%$, no
-$P \ge 50\%$.
-
-### Preguntas Frecuentes de la Cátedra
-
-#### ¿Por qué se eligieron reglas de producción?
-
-Porque el conocimiento del dominio puede expresarse como condiciones y
-conclusiones legibles. Cada recomendación conserva trazabilidad hasta una regla
-concreta y puede explicarse sin interpretar parámetros ocultos.
-
-#### ¿Es realmente una probabilidad?
-
-Es un factor de confianza basado en cobertura de requisitos. Está acotado entre
-0 y 100 %, pero no representa frecuencia estadística ni fue aprendido a partir
-de datos históricos.
-
-#### ¿Por qué se considera evaluación hacia adelante?
-
-El motor parte de hechos conocidos y avanza hacia conclusiones. Las conclusiones
-son terminales, por lo que no existe una segunda capa de reglas que requiera
-realimentación. Si se incorporaran conclusiones intermedias, el motor debería
-iterar hasta no producir hechos nuevos.
-
-#### ¿Qué diferencia existe entre objetivo y tipo de comida?
-
-`tipo_comida` es un filtro de reglas. El objetivo es una función de evaluación
-nutricional. Separarlos evita confundir elegibilidad categórica con calidad de
-la recomendación.
-
-#### ¿Por qué una receta incompleta puede recomendarse?
-
-El parcial exige coincidencia porcentual. Una receta que supera 50 % es una
-alternativa viable; el módulo de explicación muestra exactamente qué falta para
-completarla.
-
-#### ¿Cómo se garantiza la consistencia de los datos?
-
-`info.json` es la única fuente de verdad. Las pruebas verifican que cada regla
-apunte a una receta existente, que sus condiciones coincidan con la receta y
-que todos los ingredientes estén registrados.
-
-#### ¿Cómo escala la base de conocimiento?
-
-Actualmente el motor evalúa cada regla compatible, con costo (O(n \times m)).
-Para cientos o miles de reglas se puede indexar por `tipo_comida`, ingrediente
-principal o estructuras RETE, sin cambiar el contrato de la API.
-
-#### ¿Cómo se agrega una nueva receta?
-
-Se registra el ingrediente si no existe, se agrega la receta normalizada y se
-crea una regla cuya conclusión apunte al ID de la receta. Luego se ejecuta la
-suite para validar referencias y estructura.
-
-#### ¿Cómo se evita que un solo nutriente domine el ranking?
-
-El scoring limita el peso máximo de cada componente. La proteína tiene como
-máximo 40 puntos en masa muscular, mientras que los demás objetivos distribuyen
-el peso de forma aún más equilibrada.
-
-#### ¿Qué ocurre si la API recibe datos incorrectos?
-
-La inferencia no se ejecuta. `validar_payload()` recopila errores y responde
-HTTP 400 con detalles; así se evitan excepciones 500 por entradas controlables.
-
-## Instalación, Ejecución y Pruebas
-
-### Requisitos
-
-- Python 3.10 o superior.
-- pip.
-- Navegador web.
-
-### Instalación
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### Ejecución
-
-```powershell
-python lab1.py
-```
-
-Abrir:
-
-```text
-http://127.0.0.1:5001/
-```
-
-Configuración opcional:
-
-```powershell
-$env:PORT = "8000"
-$env:URL_PREFIX = "/parcial1-se"
-$env:FLASK_DEBUG = "1"
-python lab1.py
-```
-
-`FLASK_DEBUG` está desactivado por defecto y solo debe habilitarse durante
-desarrollo local.
-
-### Pruebas Automatizadas
-
-```powershell
-python -m unittest discover -s tests -v
-```
-
-Resultado esperado:
-
-```text
-Ran 13 tests
-OK
-```
-
-## Recorrido Recomendado Durante la Defensa
-
-| Orden | Pantalla o archivo | Qué demostrar |
-| ---: | --- | --- |
-| 1 | Interfaz web | Título, versión, objetivos, tipo de comida e ingredientes |
-| 2 | `info.json` | Esquema normalizado y totales de la base |
-| 3 | `lab1.py:calcular_coincidencia` | Fórmula y faltantes |
-| 4 | `lab1.py:motor_inferencia` | Filtro categórico y umbral estricto |
-| 5 | `lab1.py:evaluar_objetivo` | Scoring diferenciado |
-| 6 | `lab1.py:recomendar_recetas` | Orden y desempate |
-| 7 | `lab1.py:construir_explicacion` | Trazabilidad |
-| 8 | Casos en vivo | Confianza, segunda categoría y 50 % excluido |
-| 9 | `tests/test_lab1.py` | Evidencia automatizada |
-
-Resumen oral:
-
-> FitExpert 2.0.0 es un sistema basado en conocimiento con 27 ingredientes, 32
-> recetas y 32 reglas normalizadas. Recibe ingredientes, objetivo nutricional y
-> tipo de comida; calcula la cobertura de cada regla, conserva únicamente
-> coincidencias mayores al 50 %, puntúa nutricionalmente las recetas y las
-> ordena por confianza y scoring. Cada conclusión incluye la regla activada y
-> los ingredientes faltantes, por lo que el razonamiento es trazable.
+~~~

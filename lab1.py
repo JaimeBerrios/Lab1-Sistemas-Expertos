@@ -55,6 +55,33 @@ TIPOS_COMIDA = {
 }
 UMBRAL_COINCIDENCIA = float(SISTEMA["inferencia"]["umbral_coincidencia"])
 
+GRUPOS_INGREDIENTES = [
+    {
+        "id": "proteinas",
+        "nombre": "Proteínas",
+        "icono": "bi-egg-fried",
+        "categorias": {"proteina_animal", "proteina_vegetal", "legumbre", "lacteo"},
+    },
+    {
+        "id": "carbohidratos",
+        "nombre": "Carbohidratos",
+        "icono": "bi-lightning-charge",
+        "categorias": {"cereal", "tuberculo"},
+    },
+    {
+        "id": "vegetales_frutas",
+        "nombre": "Vegetales y frutas",
+        "icono": "bi-flower1",
+        "categorias": {"vegetal", "fruta"},
+    },
+    {
+        "id": "grasas_otros",
+        "nombre": "Grasas y otros",
+        "icono": "bi-droplet-half",
+        "categorias": {"grasa_saludable", "semilla"},
+    },
+]
+
 
 def formato_ingrediente(ingrediente_id):
     ingrediente = INGREDIENTES.get(ingrediente_id)
@@ -105,15 +132,17 @@ def motor_inferencia(hechos):
         coincidencia = calcular_coincidencia(
             hechos["ingredientes_disponibles"], condiciones["ingredientes"]
         )
-        if coincidencia["porcentaje"] > UMBRAL_COINCIDENCIA:
-            reglas_activadas.append(
-                {
-                    "regla_id": regla["id"],
-                    "receta_id": regla["conclusion"]["receta_id"],
-                    "condiciones": condiciones,
-                    "coincidencia": coincidencia,
-                }
-            )
+        if coincidencia["porcentaje"] <= UMBRAL_COINCIDENCIA:
+            continue
+
+        reglas_activadas.append(
+            {
+                "regla_id": regla["id"],
+                "receta_id": regla["conclusion"]["receta_id"],
+                "condiciones": condiciones,
+                "coincidencia": coincidencia,
+            }
+        )
 
     return reglas_activadas
 
@@ -332,11 +361,23 @@ def validar_payload(data):
 @app.get("/")
 def index():
     ingredientes = [serializar_ingrediente(item) for item in INGREDIENTES]
+    grupos_ingredientes = [
+        {
+            **grupo,
+            "ingredientes": [
+                ingrediente
+                for ingrediente in ingredientes
+                if ingrediente["categoria"] in grupo["categorias"]
+            ],
+        }
+        for grupo in GRUPOS_INGREDIENTES
+    ]
     return render_template(
         "index.html",
         objetivos=OBJETIVOS,
         tipos_comida=TIPOS_COMIDA,
         ingredientes=ingredientes,
+        grupos_ingredientes=grupos_ingredientes,
         recetas_count=len(RECETAS),
         reglas_count=len(REGLAS),
     )

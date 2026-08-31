@@ -13,6 +13,15 @@ class BaseConocimientoTests(unittest.TestCase):
             "Parcial 1 v 2.0.0 · Sistemas Expertos",
         )
 
+        ingredientes_agrupados = [
+            ingrediente_id
+            for grupo in lab1.GRUPOS_INGREDIENTES
+            for ingrediente_id, ingrediente in lab1.INGREDIENTES.items()
+            if ingrediente["categoria"] in grupo["categorias"]
+        ]
+        self.assertEqual(len(ingredientes_agrupados), 27)
+        self.assertEqual(len(set(ingredientes_agrupados)), 27)
+
         for ingrediente_id, ingrediente in lab1.INGREDIENTES.items():
             self.assertEqual(ingrediente["id"], ingrediente_id)
             self.assertEqual(
@@ -123,6 +132,9 @@ class ApiTests(unittest.TestCase):
         self.assertIn('name="tipo_comida"', contenido)
         self.assertIn("Parcial 1 v 2.0.0 · Sistemas Expertos", contenido)
         self.assertIn('data-api-url="/api/recommend"', contenido)
+        self.assertIn('id="demo-btn"', contenido)
+        self.assertIn('id="select-all-btn"', contenido)
+        self.assertEqual(contenido.count('class="ingredient-group"'), 4)
         self.assertIn("32</strong>", contenido)
         self.assertEqual(contenido.count('name="ingredientes"'), 27)
 
