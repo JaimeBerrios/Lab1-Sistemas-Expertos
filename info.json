@@ -1,136 +1,139 @@
 {
   "sistema_experto": {
+    "id": "fitexpert",
     "nombre": "FitExpert",
-    "titulo": "Sistema experto de recetas nutricionistas",
+    "version": "2.0.0",
     "area": "Nutrición",
-    "descripcion": "Sistema experto orientado a la creación de recetas nutritivas y balanceadas para personas que realizan ejercicio o practican algún deporte. El usuario ingresa los ingredientes que tiene disponibles y el sistema analiza sus aportes de proteínas y calorías para recomendar diferentes platillos que puedan prepararse con ellos. Las recetas se adaptan al objetivo físico del usuario, como aumentar masa muscular, perder grasa o mantener su peso.",
-    "arquitectura": {
-      "captura_de_datos": {
-        "entradas_requeridas": [
-          {
-            "campo": "ingredientes_disponibles",
-            "tipo": "array",
-            "descripcion": "Lista de ingredientes que el usuario tiene disponibles"
-          },
-          {
-            "campo": "objetivo_fisico",
-            "tipo": "string",
-            "valores_permitidos": [
-              "aumentar_masa_muscular",
-              "perder_grasa",
-              "mantener_peso"
-            ]
-          }
-        ]
-      },
-      "motor_de_inferencia": {
-        "tipo": "Encadenamiento hacia adelante (Forward Chaining)",
-        "estrategia_de_resolucion": "Coincidencia de subconjuntos (Subset Matching: se dispara si todos los ingredientes del 'if' están contenidos en los ingredientes del usuario)"
-      },
-      "base_de_conocimientos": {
-        "reglas": [
-          {
-            "id": 1,
-            "if": ["huevo"],
-            "then": ["huevo_hervido"]
-          },
-          {
-            "id": 2,
-            "if": ["huevo"],
-            "then": ["huevo_pochado"]
-          },
-          {
-            "id": 3,
-            "if": ["avena"],
-            "then": ["avena_cocida"]
-          },
-          {
-            "id": 4,
-            "if": ["pollo"],
-            "then": ["pollo_a_la_plancha"]
-          },
-          {
-            "id": 5,
-            "if": ["huevo", "espinaca"],
-            "then": ["huevo_con_espinaca"]
-          },
-          {
-            "id": 6,
-            "if": ["atun", "huevo"],
-            "then": ["ensalada_de_atun_y_huevo"]
-          },
-          {
-            "id": 7,
-            "if": ["pollo", "brocoli"],
-            "then": ["pollo_con_brocoli"]
-          },
-          {
-            "id": 8,
-            "if": ["yogur_griego", "avena"],
-            "then": ["yogur_con_avena"]
-          },
-          {
-            "id": 9,
-            "if": ["huevo", "espinaca", "tomate"],
-            "then": ["omelette_fitness"]
-          },
-          {
-            "id": 10,
-            "if": ["pollo", "arroz", "brocoli"],
-            "then": ["bowl_de_pollo"]
-          },
-          {
-            "id": 11,
-            "if": ["avena", "huevo", "banana"],
-            "then": ["pancakes_fitness"]
-          },
-          {
-            "id": 12,
-            "if": ["pollo", "lechuga", "tomate"],
-            "then": ["ensalada_proteica"]
-          },
-          {
-            "id": 13,
-            "if": ["pollo", "arroz", "brocoli", "tomate"],
-            "then": ["bowl_fitness_de_pollo"]
-          },
-          {
-            "id": 14,
-            "if": ["atun", "arroz", "aguacate", "tomate"],
-            "then": ["bowl_de_atun_con_aguacate"]
-          },
-          {
-            "id": 15,
-            "if": ["pollo", "lechuga", "tomate", "aguacate"],
-            "then": ["ensalada_de_pollo"]
-          },
-          {
-            "id": 16,
-            "if": ["pan_integral", "huevo", "aguacate", "tomate"],
-            "then": ["tostada_proteica"]
-          },
-          {
-            "id": 17,
-            "if": ["pollo", "arroz", "brocoli", "zanahoria", "aguacate"],
-            "then": ["bowl_completo_de_pollo"]
-          },
-          {
-            "id": 18,
-            "if": ["pollo", "camote", "brocoli", "zanahoria", "aguacate"],
-            "then": ["plato_fitness_de_pollo"]
-          },
-          {
-            "id": 19,
-            "if": ["pollo", "arroz", "frijoles", "tomate", "maiz", "aguacate"],
-            "then": ["bowl_mexicano_de_pollo"]
-          },
-          {
-            "id": 20,
-            "if": ["atun", "huevo", "arroz", "tomate", "aguacate", "espinaca"],
-            "then": ["bowl_de_atun_y_huevo"]
-          }
-        ]
-      }
+    "descripcion": "Sistema basado en conocimiento para recomendar recetas según ingredientes disponibles, objetivo nutricional y tipo de comida.",
+    "inferencia": {
+      "tipo": "Reglas de producción con encadenamiento hacia adelante y coincidencia parcial",
+      "formula_coincidencia": "(ingredientes disponibles requeridos / ingredientes totales requeridos) * 100",
+      "umbral_coincidencia": 50,
+      "operador_umbral": "mayor_que",
+      "ordenamiento": ["coincidencia_desc", "puntuacion_objetivo_desc", "nombre_asc"]
     }
-  }
+  },
+  "catalogos": {
+    "objetivos": [
+      {
+        "id": "aumentar_masa_muscular",
+        "nombre": "Aumentar masa muscular",
+        "criterio": "Combina proteína, energía, carbohidratos y grasas sin permitir que un solo macronutriente determine toda la recomendación."
+      },
+      {
+        "id": "perder_grasa",
+        "nombre": "Perder grasa",
+        "criterio": "Favorece control calórico, proteína suficiente y cantidades moderadas de carbohidratos y grasas."
+      },
+      {
+        "id": "mantener_peso",
+        "nombre": "Mantener peso",
+        "criterio": "Busca cercanía a una comida equilibrada en energía, proteína, carbohidratos y grasas."
+      }
+    ],
+    "tipos_comida": [
+      {"id": "todos", "nombre": "Todos los tipos", "es_filtro_global": true},
+      {"id": "desayuno", "nombre": "Desayuno", "es_filtro_global": false},
+      {"id": "almuerzo", "nombre": "Almuerzo", "es_filtro_global": false},
+      {"id": "cena", "nombre": "Cena", "es_filtro_global": false},
+      {"id": "snack", "nombre": "Snack", "es_filtro_global": false}
+    ]
+  },
+  "ingredientes": [
+    {"id": "huevo", "nombre": "Huevo", "categoria": "proteina_animal", "porcion": "1 unidad", "nutricion": {"calorias": 78, "proteinas": 6, "carbohidratos": 0.6, "grasas": 5.3}},
+    {"id": "avena", "nombre": "Avena", "categoria": "cereal", "porcion": "40 g", "nutricion": {"calorias": 150, "proteinas": 5, "carbohidratos": 27, "grasas": 3}},
+    {"id": "pollo", "nombre": "Pollo", "categoria": "proteina_animal", "porcion": "100 g", "nutricion": {"calorias": 165, "proteinas": 31, "carbohidratos": 0, "grasas": 3.6}},
+    {"id": "espinaca", "nombre": "Espinaca", "categoria": "vegetal", "porcion": "100 g", "nutricion": {"calorias": 23, "proteinas": 2.9, "carbohidratos": 3.6, "grasas": 0.4}},
+    {"id": "tomate", "nombre": "Tomate", "categoria": "vegetal", "porcion": "100 g", "nutricion": {"calorias": 18, "proteinas": 0.9, "carbohidratos": 3.9, "grasas": 0.2}},
+    {"id": "atun", "nombre": "Atún", "categoria": "proteina_animal", "porcion": "100 g", "nutricion": {"calorias": 132, "proteinas": 29, "carbohidratos": 0, "grasas": 1}},
+    {"id": "brocoli", "nombre": "Brócoli", "categoria": "vegetal", "porcion": "100 g", "nutricion": {"calorias": 35, "proteinas": 2.4, "carbohidratos": 7.2, "grasas": 0.4}},
+    {"id": "yogur_griego", "nombre": "Yogur griego", "categoria": "lacteo", "porcion": "170 g", "nutricion": {"calorias": 100, "proteinas": 10, "carbohidratos": 6, "grasas": 4}},
+    {"id": "arroz", "nombre": "Arroz integral", "categoria": "cereal", "porcion": "100 g cocido", "nutricion": {"calorias": 130, "proteinas": 2.7, "carbohidratos": 28, "grasas": 0.3}},
+    {"id": "banana", "nombre": "Banana", "categoria": "fruta", "porcion": "1 unidad", "nutricion": {"calorias": 105, "proteinas": 1.3, "carbohidratos": 27, "grasas": 0.4}},
+    {"id": "lechuga", "nombre": "Lechuga", "categoria": "vegetal", "porcion": "100 g", "nutricion": {"calorias": 15, "proteinas": 1, "carbohidratos": 2.9, "grasas": 0.2}},
+    {"id": "aguacate", "nombre": "Aguacate", "categoria": "grasa_saludable", "porcion": "100 g", "nutricion": {"calorias": 160, "proteinas": 2, "carbohidratos": 8.5, "grasas": 14.7}},
+    {"id": "pan_integral", "nombre": "Pan integral", "categoria": "cereal", "porcion": "1 rebanada", "nutricion": {"calorias": 80, "proteinas": 4, "carbohidratos": 14, "grasas": 1.1}},
+    {"id": "zanahoria", "nombre": "Zanahoria", "categoria": "vegetal", "porcion": "100 g", "nutricion": {"calorias": 41, "proteinas": 0.9, "carbohidratos": 9.6, "grasas": 0.2}},
+    {"id": "camote", "nombre": "Camote", "categoria": "tuberculo", "porcion": "100 g cocido", "nutricion": {"calorias": 112, "proteinas": 2, "carbohidratos": 26, "grasas": 0.1}},
+    {"id": "frijoles", "nombre": "Frijoles", "categoria": "legumbre", "porcion": "100 g cocidos", "nutricion": {"calorias": 127, "proteinas": 8.7, "carbohidratos": 22.8, "grasas": 0.5}},
+    {"id": "maiz", "nombre": "Maíz", "categoria": "cereal", "porcion": "100 g", "nutricion": {"calorias": 96, "proteinas": 3.4, "carbohidratos": 21, "grasas": 1.5}},
+    {"id": "salmon", "nombre": "Salmón", "categoria": "proteina_animal", "porcion": "100 g", "nutricion": {"calorias": 208, "proteinas": 20, "carbohidratos": 0, "grasas": 13}},
+    {"id": "quinoa", "nombre": "Quinoa", "categoria": "cereal", "porcion": "100 g cocida", "nutricion": {"calorias": 120, "proteinas": 4.4, "carbohidratos": 21.3, "grasas": 1.9}},
+    {"id": "tofu", "nombre": "Tofu", "categoria": "proteina_vegetal", "porcion": "100 g", "nutricion": {"calorias": 94, "proteinas": 10, "carbohidratos": 2.3, "grasas": 5.9}},
+    {"id": "lentejas", "nombre": "Lentejas", "categoria": "legumbre", "porcion": "100 g cocidas", "nutricion": {"calorias": 116, "proteinas": 9, "carbohidratos": 20, "grasas": 0.4}},
+    {"id": "garbanzos", "nombre": "Garbanzos", "categoria": "legumbre", "porcion": "100 g cocidos", "nutricion": {"calorias": 164, "proteinas": 8.9, "carbohidratos": 27.4, "grasas": 2.6}},
+    {"id": "manzana", "nombre": "Manzana", "categoria": "fruta", "porcion": "1 unidad", "nutricion": {"calorias": 95, "proteinas": 0.5, "carbohidratos": 25, "grasas": 0.3}},
+    {"id": "almendras", "nombre": "Almendras", "categoria": "grasa_saludable", "porcion": "28 g", "nutricion": {"calorias": 164, "proteinas": 6, "carbohidratos": 6.1, "grasas": 14.2}},
+    {"id": "leche_descremada", "nombre": "Leche descremada", "categoria": "lacteo", "porcion": "250 ml", "nutricion": {"calorias": 83, "proteinas": 8.3, "carbohidratos": 12, "grasas": 0.2}},
+    {"id": "pepino", "nombre": "Pepino", "categoria": "vegetal", "porcion": "100 g", "nutricion": {"calorias": 16, "proteinas": 0.7, "carbohidratos": 3.8, "grasas": 0.1}},
+    {"id": "semillas_chia", "nombre": "Semillas de chía", "categoria": "semilla", "porcion": "28 g", "nutricion": {"calorias": 138, "proteinas": 4.7, "carbohidratos": 12, "grasas": 8.7}}
+  ],
+  "recetas": [
+    {"id": "huevo_hervido", "nombre": "Huevo hervido", "descripcion": "Huevo cocido en agua.", "ingredientes": ["huevo"], "tipo_comida": "desayuno", "dificultad": "facil", "tiempo_preparacion_min": 12},
+    {"id": "huevo_pochado", "nombre": "Huevo pochado", "descripcion": "Huevo cocinado suavemente en agua.", "ingredientes": ["huevo"], "tipo_comida": "desayuno", "dificultad": "media", "tiempo_preparacion_min": 10},
+    {"id": "avena_cocida", "nombre": "Avena cocida", "descripcion": "Avena caliente preparada con agua.", "ingredientes": ["avena"], "tipo_comida": "desayuno", "dificultad": "facil", "tiempo_preparacion_min": 8},
+    {"id": "pollo_a_la_plancha", "nombre": "Pollo a la plancha", "descripcion": "Pechuga de pollo preparada a la plancha.", "ingredientes": ["pollo"], "tipo_comida": "almuerzo", "dificultad": "facil", "tiempo_preparacion_min": 20},
+    {"id": "huevo_con_espinaca", "nombre": "Huevo con espinaca", "descripcion": "Huevo salteado con espinaca.", "ingredientes": ["huevo", "espinaca"], "tipo_comida": "desayuno", "dificultad": "facil", "tiempo_preparacion_min": 12},
+    {"id": "ensalada_de_atun_y_huevo", "nombre": "Ensalada de atún y huevo", "descripcion": "Ensalada rica en proteínas.", "ingredientes": ["atun", "huevo"], "tipo_comida": "almuerzo", "dificultad": "facil", "tiempo_preparacion_min": 15},
+    {"id": "pollo_con_brocoli", "nombre": "Pollo con brócoli", "descripcion": "Pollo acompañado de brócoli.", "ingredientes": ["pollo", "brocoli"], "tipo_comida": "cena", "dificultad": "facil", "tiempo_preparacion_min": 25},
+    {"id": "yogur_con_avena", "nombre": "Yogur con avena", "descripcion": "Yogur griego acompañado de avena.", "ingredientes": ["yogur_griego", "avena"], "tipo_comida": "snack", "dificultad": "facil", "tiempo_preparacion_min": 5},
+    {"id": "omelette_fitness", "nombre": "Omelette fitness", "descripcion": "Omelette de huevo, espinaca y tomate.", "ingredientes": ["huevo", "espinaca", "tomate"], "tipo_comida": "desayuno", "dificultad": "media", "tiempo_preparacion_min": 15},
+    {"id": "bowl_de_pollo", "nombre": "Bowl de pollo", "descripcion": "Pollo acompañado de arroz y brócoli.", "ingredientes": ["pollo", "arroz", "brocoli"], "tipo_comida": "almuerzo", "dificultad": "facil", "tiempo_preparacion_min": 30},
+    {"id": "pancakes_fitness", "nombre": "Pancakes fitness", "descripcion": "Pancakes preparados con avena, huevo y banana.", "ingredientes": ["avena", "huevo", "banana"], "tipo_comida": "desayuno", "dificultad": "media", "tiempo_preparacion_min": 20},
+    {"id": "ensalada_proteica", "nombre": "Ensalada proteica", "descripcion": "Ensalada de pollo, lechuga y tomate.", "ingredientes": ["pollo", "lechuga", "tomate"], "tipo_comida": "almuerzo", "dificultad": "facil", "tiempo_preparacion_min": 18},
+    {"id": "bowl_fitness_de_pollo", "nombre": "Bowl fitness de pollo", "descripcion": "Bowl de pollo, arroz, brócoli y tomate.", "ingredientes": ["pollo", "arroz", "brocoli", "tomate"], "tipo_comida": "almuerzo", "dificultad": "media", "tiempo_preparacion_min": 35},
+    {"id": "bowl_de_atun_con_aguacate", "nombre": "Bowl de atún con aguacate", "descripcion": "Atún acompañado de arroz, tomate y aguacate.", "ingredientes": ["atun", "arroz", "aguacate", "tomate"], "tipo_comida": "almuerzo", "dificultad": "facil", "tiempo_preparacion_min": 20},
+    {"id": "ensalada_de_pollo", "nombre": "Ensalada de pollo", "descripcion": "Ensalada fresca de pollo y vegetales.", "ingredientes": ["pollo", "lechuga", "tomate", "aguacate"], "tipo_comida": "almuerzo", "dificultad": "facil", "tiempo_preparacion_min": 20},
+    {"id": "tostada_proteica", "nombre": "Tostada proteica", "descripcion": "Pan integral con huevo, aguacate y tomate.", "ingredientes": ["pan_integral", "huevo", "aguacate", "tomate"], "tipo_comida": "desayuno", "dificultad": "facil", "tiempo_preparacion_min": 15},
+    {"id": "bowl_completo_de_pollo", "nombre": "Bowl completo de pollo", "descripcion": "Bowl completo con pollo, arroz y vegetales.", "ingredientes": ["pollo", "arroz", "brocoli", "zanahoria", "aguacate"], "tipo_comida": "almuerzo", "dificultad": "media", "tiempo_preparacion_min": 40},
+    {"id": "plato_fitness_de_pollo", "nombre": "Plato fitness de pollo", "descripcion": "Pollo acompañado de camote y vegetales.", "ingredientes": ["pollo", "camote", "brocoli", "zanahoria", "aguacate"], "tipo_comida": "cena", "dificultad": "media", "tiempo_preparacion_min": 40},
+    {"id": "bowl_mexicano_de_pollo", "nombre": "Bowl mexicano de pollo", "descripcion": "Bowl con pollo, arroz, frijoles, tomate, maíz y aguacate.", "ingredientes": ["pollo", "arroz", "frijoles", "tomate", "maiz", "aguacate"], "tipo_comida": "almuerzo", "dificultad": "media", "tiempo_preparacion_min": 45},
+    {"id": "bowl_de_atun_y_huevo", "nombre": "Bowl de atún y huevo", "descripcion": "Bowl de alto contenido proteico.", "ingredientes": ["atun", "huevo", "arroz", "tomate", "aguacate", "espinaca"], "tipo_comida": "almuerzo", "dificultad": "media", "tiempo_preparacion_min": 30},
+    {"id": "tostada_de_aguacate", "nombre": "Tostada de aguacate y huevo", "descripcion": "Pan integral con aguacate y huevo.", "ingredientes": ["pan_integral", "aguacate", "huevo"], "tipo_comida": "desayuno", "dificultad": "facil", "tiempo_preparacion_min": 12},
+    {"id": "parfait_de_frutas", "nombre": "Parfait de frutas", "descripcion": "Yogur griego con banana, manzana y almendras.", "ingredientes": ["yogur_griego", "banana", "manzana", "almendras"], "tipo_comida": "snack", "dificultad": "facil", "tiempo_preparacion_min": 7},
+    {"id": "batido_post_entreno", "nombre": "Batido post-entreno", "descripcion": "Batido de yogur, banana, avena y leche descremada.", "ingredientes": ["yogur_griego", "banana", "avena", "leche_descremada"], "tipo_comida": "snack", "dificultad": "facil", "tiempo_preparacion_min": 6},
+    {"id": "bowl_de_salmon_y_quinoa", "nombre": "Bowl de salmón y quinoa", "descripcion": "Salmón con quinoa, brócoli y aguacate.", "ingredientes": ["salmon", "quinoa", "brocoli", "aguacate"], "tipo_comida": "almuerzo", "dificultad": "media", "tiempo_preparacion_min": 35},
+    {"id": "salmon_con_camote", "nombre": "Salmón con camote", "descripcion": "Salmón con camote, brócoli y zanahoria.", "ingredientes": ["salmon", "camote", "brocoli", "zanahoria"], "tipo_comida": "cena", "dificultad": "media", "tiempo_preparacion_min": 38},
+    {"id": "ensalada_de_tofu_y_quinoa", "nombre": "Ensalada de tofu y quinoa", "descripcion": "Ensalada vegetal con tofu, quinoa y vegetales frescos.", "ingredientes": ["tofu", "quinoa", "espinaca", "tomate", "pepino"], "tipo_comida": "cena", "dificultad": "facil", "tiempo_preparacion_min": 22},
+    {"id": "ensalada_de_lentejas", "nombre": "Ensalada de lentejas", "descripcion": "Lentejas con espinaca, tomate, pepino y aguacate.", "ingredientes": ["lentejas", "espinaca", "tomate", "pepino", "aguacate"], "tipo_comida": "almuerzo", "dificultad": "facil", "tiempo_preparacion_min": 20},
+    {"id": "ensalada_de_garbanzos", "nombre": "Ensalada de garbanzos", "descripcion": "Garbanzos con lechuga, tomate y pepino.", "ingredientes": ["garbanzos", "lechuga", "tomate", "pepino"], "tipo_comida": "almuerzo", "dificultad": "facil", "tiempo_preparacion_min": 15},
+    {"id": "manzana_con_almendras", "nombre": "Manzana con almendras", "descripcion": "Snack rápido de manzana fresca y almendras.", "ingredientes": ["manzana", "almendras"], "tipo_comida": "snack", "dificultad": "facil", "tiempo_preparacion_min": 3},
+    {"id": "sandwich_integral_de_atun", "nombre": "Sándwich integral de atún", "descripcion": "Pan integral con atún, lechuga y tomate.", "ingredientes": ["pan_integral", "atun", "lechuga", "tomate"], "tipo_comida": "almuerzo", "dificultad": "facil", "tiempo_preparacion_min": 12},
+    {"id": "bowl_de_pollo_y_quinoa", "nombre": "Bowl de pollo y quinoa", "descripcion": "Pollo con quinoa, brócoli y zanahoria.", "ingredientes": ["pollo", "quinoa", "brocoli", "zanahoria"], "tipo_comida": "cena", "dificultad": "media", "tiempo_preparacion_min": 35},
+    {"id": "pudin_de_chia", "nombre": "Pudín de chía", "descripcion": "Pudín de chía con yogur griego y banana.", "ingredientes": ["semillas_chia", "yogur_griego", "banana"], "tipo_comida": "desayuno", "dificultad": "facil", "tiempo_preparacion_min": 10}
+  ],
+  "reglas_produccion": [
+    {"id": "R001", "condiciones": {"ingredientes": ["huevo"], "tipo_comida": "desayuno"}, "conclusion": {"receta_id": "huevo_hervido"}},
+    {"id": "R002", "condiciones": {"ingredientes": ["huevo"], "tipo_comida": "desayuno"}, "conclusion": {"receta_id": "huevo_pochado"}},
+    {"id": "R003", "condiciones": {"ingredientes": ["avena"], "tipo_comida": "desayuno"}, "conclusion": {"receta_id": "avena_cocida"}},
+    {"id": "R004", "condiciones": {"ingredientes": ["pollo"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "pollo_a_la_plancha"}},
+    {"id": "R005", "condiciones": {"ingredientes": ["huevo", "espinaca"], "tipo_comida": "desayuno"}, "conclusion": {"receta_id": "huevo_con_espinaca"}},
+    {"id": "R006", "condiciones": {"ingredientes": ["atun", "huevo"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "ensalada_de_atun_y_huevo"}},
+    {"id": "R007", "condiciones": {"ingredientes": ["pollo", "brocoli"], "tipo_comida": "cena"}, "conclusion": {"receta_id": "pollo_con_brocoli"}},
+    {"id": "R008", "condiciones": {"ingredientes": ["yogur_griego", "avena"], "tipo_comida": "snack"}, "conclusion": {"receta_id": "yogur_con_avena"}},
+    {"id": "R009", "condiciones": {"ingredientes": ["huevo", "espinaca", "tomate"], "tipo_comida": "desayuno"}, "conclusion": {"receta_id": "omelette_fitness"}},
+    {"id": "R010", "condiciones": {"ingredientes": ["pollo", "arroz", "brocoli"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "bowl_de_pollo"}},
+    {"id": "R011", "condiciones": {"ingredientes": ["avena", "huevo", "banana"], "tipo_comida": "desayuno"}, "conclusion": {"receta_id": "pancakes_fitness"}},
+    {"id": "R012", "condiciones": {"ingredientes": ["pollo", "lechuga", "tomate"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "ensalada_proteica"}},
+    {"id": "R013", "condiciones": {"ingredientes": ["pollo", "arroz", "brocoli", "tomate"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "bowl_fitness_de_pollo"}},
+    {"id": "R014", "condiciones": {"ingredientes": ["atun", "arroz", "aguacate", "tomate"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "bowl_de_atun_con_aguacate"}},
+    {"id": "R015", "condiciones": {"ingredientes": ["pollo", "lechuga", "tomate", "aguacate"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "ensalada_de_pollo"}},
+    {"id": "R016", "condiciones": {"ingredientes": ["pan_integral", "huevo", "aguacate", "tomate"], "tipo_comida": "desayuno"}, "conclusion": {"receta_id": "tostada_proteica"}},
+    {"id": "R017", "condiciones": {"ingredientes": ["pollo", "arroz", "brocoli", "zanahoria", "aguacate"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "bowl_completo_de_pollo"}},
+    {"id": "R018", "condiciones": {"ingredientes": ["pollo", "camote", "brocoli", "zanahoria", "aguacate"], "tipo_comida": "cena"}, "conclusion": {"receta_id": "plato_fitness_de_pollo"}},
+    {"id": "R019", "condiciones": {"ingredientes": ["pollo", "arroz", "frijoles", "tomate", "maiz", "aguacate"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "bowl_mexicano_de_pollo"}},
+    {"id": "R020", "condiciones": {"ingredientes": ["atun", "huevo", "arroz", "tomate", "aguacate", "espinaca"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "bowl_de_atun_y_huevo"}},
+    {"id": "R021", "condiciones": {"ingredientes": ["pan_integral", "aguacate", "huevo"], "tipo_comida": "desayuno"}, "conclusion": {"receta_id": "tostada_de_aguacate"}},
+    {"id": "R022", "condiciones": {"ingredientes": ["yogur_griego", "banana", "manzana", "almendras"], "tipo_comida": "snack"}, "conclusion": {"receta_id": "parfait_de_frutas"}},
+    {"id": "R023", "condiciones": {"ingredientes": ["yogur_griego", "banana", "avena", "leche_descremada"], "tipo_comida": "snack"}, "conclusion": {"receta_id": "batido_post_entreno"}},
+    {"id": "R024", "condiciones": {"ingredientes": ["salmon", "quinoa", "brocoli", "aguacate"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "bowl_de_salmon_y_quinoa"}},
+    {"id": "R025", "condiciones": {"ingredientes": ["salmon", "camote", "brocoli", "zanahoria"], "tipo_comida": "cena"}, "conclusion": {"receta_id": "salmon_con_camote"}},
+    {"id": "R026", "condiciones": {"ingredientes": ["tofu", "quinoa", "espinaca", "tomate", "pepino"], "tipo_comida": "cena"}, "conclusion": {"receta_id": "ensalada_de_tofu_y_quinoa"}},
+    {"id": "R027", "condiciones": {"ingredientes": ["lentejas", "espinaca", "tomate", "pepino", "aguacate"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "ensalada_de_lentejas"}},
+    {"id": "R028", "condiciones": {"ingredientes": ["garbanzos", "lechuga", "tomate", "pepino"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "ensalada_de_garbanzos"}},
+    {"id": "R029", "condiciones": {"ingredientes": ["manzana", "almendras"], "tipo_comida": "snack"}, "conclusion": {"receta_id": "manzana_con_almendras"}},
+    {"id": "R030", "condiciones": {"ingredientes": ["pan_integral", "atun", "lechuga", "tomate"], "tipo_comida": "almuerzo"}, "conclusion": {"receta_id": "sandwich_integral_de_atun"}},
+    {"id": "R031", "condiciones": {"ingredientes": ["pollo", "quinoa", "brocoli", "zanahoria"], "tipo_comida": "cena"}, "conclusion": {"receta_id": "bowl_de_pollo_y_quinoa"}},
+    {"id": "R032", "condiciones": {"ingredientes": ["semillas_chia", "yogur_griego", "banana"], "tipo_comida": "desayuno"}, "conclusion": {"receta_id": "pudin_de_chia"}}
+  ]
 }

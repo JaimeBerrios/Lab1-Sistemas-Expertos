@@ -23,8 +23,8 @@
               <span class="eyebrow">Sistema experto</span>
               <h1 class="display-5 fw-bold mb-3">FitExpert</h1>
               <p class="lead mb-0">
-                Recomienda recetas nutricionales usando encadenamiento hacia adelante
-                a partir de tu objetivo físico e ingredientes disponibles.
+                Recomienda recetas mediante reglas de producción, objetivo nutricional,
+                tipo de comida y coincidencia de ingredientes.
               </p>
             </div>
             <div class="col-lg-5">
@@ -34,12 +34,12 @@
                   <span>ingredientes</span>
                 </div>
                 <div>
-                  <strong>20</strong>
+                  <strong>{{ reglas_count }}</strong>
                   <span>reglas</span>
                 </div>
                 <div>
-                  <strong>{{ objetivos|length }}</strong>
-                  <span>objetivos</span>
+                  <strong>{{ recetas_count }}</strong>
+                  <span>recetas</span>
                 </div>
               </div>
             </div>
@@ -71,6 +71,17 @@
                 </select>
               </div>
 
+              <div class="mb-4">
+                <label for="tipo-comida" class="form-label">Tipo de comida</label>
+                <select id="tipo-comida" name="tipo_comida" class="form-select">
+                  {% for id, nombre in tipos_comida.items() %}
+                    <option value="{{ id }}" {% if id == "todos" %}selected{% endif %}>
+                      {{ nombre }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
               <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
                 <label class="form-label mb-0">Ingredientes disponibles</label>
                 <button type="button" id="clear-btn" class="btn btn-sm btn-outline-secondary icon-button-text">
@@ -90,7 +101,10 @@
                     >
                     <span class="ingredient-name">{{ ingrediente.nombre }}</span>
                     <span class="ingredient-meta">
-                      {{ ingrediente.calorias }} kcal · {{ "%.1f"|format(ingrediente.proteinas) }} g
+                      {{ ingrediente.nutricion.calorias }} kcal ·
+                      P {{ "%.1f"|format(ingrediente.nutricion.proteinas) }} g ·
+                      C {{ "%.1f"|format(ingrediente.nutricion.carbohidratos) }} g ·
+                      G {{ "%.1f"|format(ingrediente.nutricion.grasas) }} g
                     </span>
                   </label>
                 {% endfor %}
@@ -115,7 +129,7 @@
                 <div id="recipe-count" class="count-badge">0</div>
               </div>
 
-              <div id="status-box" class="alert alert-info mb-4">
+              <div id="status-box" class="alert alert-info mb-4" role="status" aria-live="polite">
                 Marca ingredientes y ejecuta el sistema experto.
               </div>
 
